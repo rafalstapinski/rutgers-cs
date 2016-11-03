@@ -1,0 +1,73 @@
+input:
+  ./tokenizer "0700 1234 3.14159e-10 07253946 0544 02349234923 0x7af52e"
+expected output:
+  octal 0700
+  integer 1234
+  float 3.14159e-10
+  mal 07253946
+  octal 0544
+  mal 02349234923
+  hexadecimal 0x7af52e
+output:
+  octal 0700
+  integer 1234
+  float 3.14159e-10
+  mal 07253946
+  octal 0544
+  mal 02349234923
+  hexadecimal 0x7af52e
+
+input:
+  ./tokenizer "0700      12"
+expected output:
+  octal 0700
+  integer 12
+output:
+  octal 0700
+  integer 12
+
+input:
+  ./tokenizer "0 1 1 "
+expected output:
+  zero 0
+  integer 1
+  integer 1
+output:
+  mal 2???
+  integer 1
+  mal 1
+  integer 1
+  mal 1
+  tokenizer(32405,0x7fff7248d000) malloc: *** error for object 0xa000000000000000: pointer being freed was not allocated
+  *** set a breakpoint in malloc_error_break to debug
+  fish: './tokenizer "0 1 1 "' terminated by signal SIGABRT (Abort)
+
+input:
+  ./tokenizer "123p123"
+expected output:
+  integer 123
+  invalid [0x70]
+  integer 123
+output:
+  mal 123p123
+
+input:
+  ./tokenizer "1 1"
+expected output:
+  integer 1
+  integer 1
+output:
+  integer 1
+  mal 1
+  integer 1
+  mal 1
+
+input:
+  ./tokenizer "3.12e-1202"
+expected output:
+  float 3.12
+  invalid [0x65]
+  invalid [0x2d]
+  integer 1202
+output:
+  float 3.12e-1202
