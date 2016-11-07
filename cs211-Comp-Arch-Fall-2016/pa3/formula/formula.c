@@ -4,11 +4,11 @@
 #include <string.h>
 #include "nCr.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv[]) {
 
   if (argv[1][0] == '-' && argv[1][1] == 'h' && strlen(argv[1]) == 2) {
 
-    printf("Usage: formula <positive integer>");
+    printf("Usage: formula <positive integer>\n");
 
   } else {
 
@@ -16,21 +16,29 @@ int main(int argc, char *argv[]) {
 
     gettimeofday(&start, NULL);
 
-    int r = atoi(argv[1]);
+    int n = atoi(argv[1]);
 
-    printf("(1 + x)^%d = 1", r);
+    if (n < 0) {
+      printf("Usage: formula <positive integer>\n");
+      return 1;
+    } else if (Factorial(n) == 0) {
+      printf("Overflow error.\n");
+      return 1;
+    }
 
-    int n;
-    for (n = 1; n <= r; n++) {
-      printf(" + %d*x^%d", nCr(n, r), n);
+    printf("(1 + x)^%d = 1", n);
+
+    int r;
+
+    for (r = 1; r <= n; r++) {
+      printf(" + %d*x^%d", nCr(n, r), r);
     }
 
     gettimeofday(&end, NULL);
 
-    printf("%ld", ((end.tv_sec * 1000000 + end.tv_usec) - (start.tv_sec * 1000000 + start.tv_usec)));
+    printf("\nTime Required = %ld microsecond\n", (1000000 * end.tv_sec + end.tv_usec) - (1000000 * start.tv_sec + start.tv_usec));
 
   }
 
   return 0;
-
 }
