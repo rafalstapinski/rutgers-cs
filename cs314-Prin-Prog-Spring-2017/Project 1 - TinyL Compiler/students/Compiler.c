@@ -249,7 +249,7 @@ static void stmt()
 			// printf("Ending stmt\n");
 			return;
 		default:
-			ERROR("Program error.  Current input symbol is %c\n", token);
+			ERROR("Program error. Current input symbol is %c\n", token);
 			exit(EXIT_FAILURE);
 	}
 }

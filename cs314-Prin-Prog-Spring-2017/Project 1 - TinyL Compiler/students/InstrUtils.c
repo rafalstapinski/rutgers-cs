@@ -71,9 +71,13 @@ void PrintInstructionList(FILE * outfile, Instruction * instr)
 	}
 
 	while (instr != NULL) {
-		PrintInstruction(outfile, instr);
+		//printf("%c\t", instr->critical);
+		if (instr->critical == 't') {
+			PrintInstruction(outfile, instr);
+		}
 		instr = instr->next;
 	}
+
 }
 
 Instruction *ReadInstruction(FILE * infile)
