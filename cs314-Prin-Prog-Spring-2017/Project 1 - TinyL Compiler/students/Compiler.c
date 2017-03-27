@@ -84,6 +84,7 @@ static int digit();
 /*************************************************************************/
 static int digit()
 {
+	// printf("Starting digit\n");
 	int reg;
 
 	if (!is_digit(token)) {
@@ -93,11 +94,13 @@ static int digit()
 	reg = next_register();
 	CodeGen(LOADI, to_digit(token), reg, EMPTY_FIELD);
 	next_token();
+	// printf("Ending digit\n");
 	return reg;
 }
 
 static int variable()
 {
+	// printf("Starting variable\n");
 	int reg;
 
 	if (!is_identifier(token)) {
@@ -107,81 +110,182 @@ static int variable()
 	reg = next_register();
 	CodeGen(LOADAI, 0, (token-'a')*4, reg); /* token - 'a' is offset of varible, *4 for byte address */
 	next_token();
+	// printf("Ending variable\n");
 	return reg;
 }
 
 static int expr()
 {
+
+	// printf("Starting expr\n");
 	int reg, left_reg, right_reg;
 
 	switch (token) {
 
-	case '+':
-		next_token();
-		left_reg = expr();
-		right_reg = expr();
-		reg = next_register();
-		CodeGen(ADD, left_reg, right_reg, reg);
-		return reg;
+		case '+':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(ADD, left_reg, right_reg, reg);
+			// printf("Ending expr\n");
+			return reg;
 
+		case '-':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(SUB, left_reg, right_reg, reg);
+			// printf("Ending expr\n");
+			return reg;
 
-        case 'f':
-                return variable();
+		case '*':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(MUL, left_reg, right_reg, reg);
+			// printf("Ending expr\n");
+			return reg;
 
+		case '%':
+			next_token();
+			left_reg = expr();
+			right_reg = expr();
+			reg = next_register();
+			CodeGen(DIV, left_reg, right_reg, reg);
+			// printf("Ending expr\n");
+			return reg;
 
-	case '1':
-                return digit();
-
-	case '2':
-                return digit();
-
-	case '3':
-                return digit();
-
-	default:
-		ERROR("Symbol %c unknown\n", token);
-		exit(EXIT_FAILURE);
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+			return variable();
+			// printf("Ending expr\n");
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			return digit();
+			// printf("Ending expr\n");
+		default:
+			ERROR("Symbol %c unknown\n", token);
+			exit(EXIT_FAILURE);
 	}
 }
 
 static void assign()
 {
-	/* YOUR CODE GOES HERE */
+
+	int offset = (token - 'a') * 4;
+	next_token();
+	if (token != '=') {
+		ERROR("Program error. Current input symbol is %c\n", token);
+		exit(EXIT_FAILURE);
+	}
+	next_token();
+	CodeGen(STOREAI, expr(), 0, offset);
+
+
 }
 
 static void print()
 {
-	/* YOUR CODE GOES HERE */
+	next_token();
+	if (!is_identifier(token)) {
+			ERROR("Program error. Current input symbol is %c\n", token);
+			exit(EXIT_FAILURE);
+	}
+	CodeGen(OUTPUTAI, 0, (token - 'a') * 4, EMPTY_FIELD);
+	next_token();
+
 }
 
 static void stmt()
 {
-	/* YOUR CODE GOES HERE */
+	// printf("Starting stmt\n");
+	switch (token) {
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+			assign();
+			// printf("Ending stmt\n");
+			return;
+		case '#':
+			print();
+			// printf("Ending stmt\n");
+			return;
+		default:
+			ERROR("Program error.  Current input symbol is %c\n", token);
+			exit(EXIT_FAILURE);
+	}
 }
 
 static void morestmts()
 {
-	/* YOUR CODE GOES HERE */
+
+	// printf("Starting morestmts\n");
+	if (token == ';') {
+		next_token();
+		stmtlist();
+
+	}
+	// printf("Ended morestmts\n");
 }
 
 static void stmtlist()
 {
-	/* YOUR CODE GOES HERE */
+
+	// printf("Starting stmtlist\n");
+	stmt();
+	morestmts();
+	// printf("Ending stmtlist\n");
 }
 
 static void program()
 {
-	/* YOUR CODE GOES HERE */
 
-        /* THIS CODE IS BOGUS */
-        int dummy;
-        /* THIS CODE IS BOGUS */
-	dummy = expr();
+	// printf("Starting program\n");
+
+	stmtlist();
 
 	if (token != '.') {
 	  ERROR("Program error.  Current input symbol is %c\n", token);
 	  exit(EXIT_FAILURE);
-	};
+	}
 }
 
 /*************************************************************************/

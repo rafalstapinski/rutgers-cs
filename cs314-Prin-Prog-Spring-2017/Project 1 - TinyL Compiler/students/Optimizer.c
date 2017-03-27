@@ -23,11 +23,16 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	/* YOUR CODE GOES HERE */
+	Instruction *instr1 = head,
+	 						*instr2 = instr1->next,
+							*instr3 = instr2->next;
 
-	if (head) 
+
+
+
+
+	if (head)
 		PrintInstructionList(stdout, head);
-	
+
 	return EXIT_SUCCESS;
 }
-
