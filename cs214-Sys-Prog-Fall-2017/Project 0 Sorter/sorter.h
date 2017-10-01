@@ -10,3 +10,9 @@
 
 
 //Suggestion: prototype a mergesort function
+
+struct Row {
+  char *color;
+  char *director_name;
+
+}
