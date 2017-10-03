@@ -22,4 +22,12 @@ A major difficulty was remembering all the ins and outs of pointers, especially
 in and of structs. Also, dealing with offsets inside each struct became
 difficult which lead to long chains of if statements instead to deal with
 different column names, as apparently, C does not possess the capability for
-reflection. 
+reflection.
+
+# Running
+
+Run `make all` to run
+and `make clean` to clean
+
+Then run as normal:
+`cat input.file | ./sorter -c  movie_title > output.csv`
