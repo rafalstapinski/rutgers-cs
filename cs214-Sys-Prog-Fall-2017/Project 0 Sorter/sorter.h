@@ -32,19 +32,29 @@ struct Row {
   int     *facenumber_in_poster;
   char    *plot_keywords;
   char    *movie_imdb_link;
-  int     *num_users_for_reviews;
+  int     *num_user_for_reviews;
   char    *language;
   char    *country;
   char    *content_rating;
   int     *budget;
   int     *title_year;
   int     *actor_2_facebook_likes;
-  float   *himdb_score;
+  float   *imdb_score;
   float   *aspect_ratio;
   int     *movie_facebook_likes;
   struct Row *next;
 };
 
-struct Row *mergesort(struct Row *head);
-struct Row *mergelist(struct Row *list1, struct Row *list2);
-struct Row *bisectlist(struct Row *head);
+char *column;
+struct Row *head;
+
+void strip(char *entry);
+char *get_entry(char *str);
+void add_row(char *line);
+void print_row(struct Row *row);
+void print_list();
+int main(int argc, char *argv[]);
+
+struct Row *msort(struct Row *head);
+struct Row *merge_list(struct Row *list1, struct Row *list2);
+struct Row *split_list(struct Row *head);
