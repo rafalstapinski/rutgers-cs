@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
+/** Convenience method to print a matrix */
 void printMatrix(double **m, int rows, int cols)
 {
     for (int i = 0; i < rows; i++) {
@@ -11,6 +11,22 @@ void printMatrix(double **m, int rows, int cols)
         printf("\n");
     }
     printf("\n");
+}
+
+
+
+/** Convenience method to print a 2D array on the stack */
+void print2DArray(int numRows, int numColumns, double array[][numColumns])
+{
+    int i;
+    int y;
+
+    for(i = 0; i < numRows; i++) {
+        for(y = 0; y < numColumns; y++) {
+            printf("%f\t", array[numRows][numColumns]);
+        }
+        printf("\n");
+    }
 }
 
 double **transpose(double **m, int rows, int cols)
@@ -77,6 +93,7 @@ double **multMatrices(double **m1, double **m2, int m1rows, int m1cols, int m2ro
 
     return result;
 }
+
 
 double **augment(double **m, int size)
 {
@@ -177,47 +194,51 @@ int main(int argc, const char * argv[])
         }
     }
 
-    // printMatrix(trainingMatrix, 7, 4);
+    double **augmentedMatrix = (double **) malloc(numTrainingSamples + (numTrainingSamples * numTrainingAttributes) * sizeof(double));
 
 
-    // int m1rows = 3;
-    // int m1cols = 3;
-    //
-    // int m2rows = 3;
-    // int m2cols = 3;
-    //
-    // double **matrix1 = (double **) (malloc((8 * sizeof(double *))));
-    //
-    // for (int i = 0; i < m1rows; i++)
-    // {
-    //     matrix1[i] = (double *) (malloc(3 * sizeof(double)));
-    // }
-    //
-    // matrix1[0][0] = 1;
-    // matrix1[0][1] = 2;
-    // matrix1[0][2] = 3;
-    // matrix1[1][0] = 4;
-    // matrix1[1][1] = 5;
-    // matrix1[1][2] = 6;
-    // matrix1[2][0] = 7;
-    // matrix1[2][1] = 8;
-    // matrix1[2][2] = 9;
-    //
-    // double **matrix2 = transpose(matrix1, 3, 3);
-    // double **matrix3 = multMatrices(matrix1, matrix2, 3, 3, 3, 3);
-    //
-    // printMatrix(matrix1, 3, 3);
-    // printMatrix(matrix2, 3, 3);
-    // printMatrix(matrix3, 3, 3);
-    //
-    // double **matrix4 = augment(matrix3, 3);
-    //
-    // printMatrix(matrix4, 3, 6);
-    //
-    // free(matrix1);
-    // free(matrix2);
-    // free(matrix3);
-    // free(matrix4);
-    //
+    printf("good stuff\n");
+    printMatrix(trainingMatrix, 3, 3);
+
+    printf("\nAugmented matrix\n");
+
+    augmentMatrix(3, 3, trainingMatrix, augmentedMatrix);
+    printMatrix(augmentedMatrix, 3, 3 + 3);
+
+    printf("\nFINISHED\n");
+
+    int m1rows = 2;
+    int m1cols = 3;
+
+    int m2rows = 3;
+    int m2cols = 2;
+
+    double **matrix1 = (double **) (malloc((3 * sizeof(double *))));
+
+    for (int i = 0; i < m1rows; i++)
+    {
+        matrix1[i] = (double *) (malloc(3 * sizeof(double)));
+    }
+
+    matrix1[0][0] = 1;
+    matrix1[0][1] = 2;
+    matrix1[0][2] = 3;
+    matrix1[1][0] = 4;
+    matrix1[1][1] = 5;
+    matrix1[1][2] = 6;
+    matrix1[7][0] = 4;
+    matrix1[7][1] = 5;
+    matrix1[7][2] = 6;
+
+    double **matrix2 = transpose(matrix1, 2, 3);
+    double **matrix3 = multMatrices(matrix1, matrix2, 2, 3, 3, 2);
+
+    printMatrix(matrix1, 2, 3);
+    printMatrix(matrix2, 3, 2);
+    printMatrix(matrix3, 2, 2);
+
+    // free(trainingMatrix);
+    // free(testingMatrix);
+
     return 0;
 }
