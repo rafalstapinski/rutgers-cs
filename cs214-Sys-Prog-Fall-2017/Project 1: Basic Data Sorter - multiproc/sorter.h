@@ -33,9 +33,9 @@ struct Row {
 };
 
 char *column;
+char *output_dir;
 struct Row *head;
 
-int *p_count;
 
 void strip(char *entry);
 char *get_entry(char *str);

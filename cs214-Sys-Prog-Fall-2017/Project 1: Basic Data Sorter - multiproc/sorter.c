@@ -17,6 +17,11 @@
 
 int *p_count;
 
+struct Row *head;
+char *column;
+char *output_dir;
+char *src_dir;
+
 void strip(char *entry) {
 
   //remove whitespace from a string
@@ -99,9 +104,11 @@ void add_row(char *line) {
   char *token = get_entry(line);
   struct Row *row = (struct Row*) malloc(sizeof(struct Row));
 
-  while (token) {
+  while (token)
+  {
 
-    switch(i) {
+    switch(i)
+    {
       case 0:
         row->color = malloc(strlen(token) + 1);
         strncpy(row->color, token, strlen(token));
@@ -199,6 +206,135 @@ void add_row(char *line) {
 
 }
 
+void write_row(struct Row *row, FILE *fp)
+{
+
+  // print each column of a row
+
+
+
+  fprintf(fp, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
+            row->color,
+            row->director_name,
+            *row->num_critic_for_reviews,
+            *row->duration,
+            *row->director_facebook_likes,
+            *row->actor_3_facebook_likes,
+            row->actor_2_name,
+            *row->actor_1_facebook_likes,
+            *row->gross,
+            row->genres,
+            row->actor_1_name,
+            row->movie_title,
+            *row->num_voted_users,
+            *row->cast_total_facebook_likes,
+            row->actor_3_name,
+            *row->facenumber_in_poster,
+            row->plot_keywords,
+            row->movie_imdb_link,
+            *row->num_user_for_reviews,
+            row->language,
+            row->country,
+            row->content_rating,
+            *row->budget,
+            *row->title_year,
+            *row->actor_2_facebook_likes,
+            *row->imdb_score,
+            *row->aspect_ratio,
+            *row->movie_facebook_likes);
+}
+
+void write_list(const char *f_path)
+{
+
+  // print the title row, then each successive row
+
+  // printf("%s\n", f_path);
+  char *f_name = strrchr(f_path, '/');
+
+  if (f_name != NULL)
+  {
+    f_name++;
+  }
+
+  f_name[strlen(f_name) - 4] = 0;
+
+  // printf("%s\n\n", f_name);
+
+  char *output_path = (char *) malloc(strlen(output_dir) + 1 + strlen(f_name) + 1 + 6 + 1 + strlen(column) + 4 + 1);
+
+  strcat(output_path, output_dir);
+  strcat(output_path, "/");
+  strcat(output_path, f_name);
+  strcat(output_path, "-sorted-");
+  strcat(output_path, column);
+  strcat(output_path, ".csv");
+
+  FILE *fp;
+
+  fp = fopen(output_path, "ab+");
+
+
+
+  fprintf(fp, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n");
+  struct Row *ptr = head;
+
+  while (ptr != NULL)
+  {
+
+    write_row(ptr, fp);
+    ptr = ptr->next;
+
+  }
+
+  fclose(fp);
+}
+
+void sort_csv(const char *name)
+{
+
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen(name, "r");
+
+  if (fp == NULL)
+  {
+    exit(-1);
+  }
+
+  int i = 0;
+
+  while ((read = getline(&line, &len, fp)) != -1)
+  {
+    if (i == 0)
+    {
+      i++;
+      if (strcmp(line, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n") != 0)
+      {
+        printf("invalid format");
+        printf(" %s", name);
+        exit(0);
+      }
+    }
+
+    else
+    {
+      add_row(line);
+    }
+  }
+
+  head = msort(head);
+  write_list(name);
+
+  free(head);
+  fclose(fp);
+  free(line);
+
+}
+
 void traverse(const char *path)
 {
 
@@ -207,12 +343,12 @@ void traverse(const char *path)
 
   if ((dir = opendir(path)) == NULL)
   {
-    exit(-1)
+    exit(-1);
   }
 
    if ((ent = readdir(dir)) == NULL)
    {
-      exit(-1)
+      exit(-1);
    }
 
    while ((ent = readdir(dir)) != NULL)
@@ -230,36 +366,156 @@ void traverse(const char *path)
         continue;
       }
 
-      traverse(full_path);
+      (*p_count)++;
+      pid_t child = fork();
+
+      if (child < 0)
+      {
+        exit(-1);
+      }
+
+      else if (child == 0)
+      {
+        traverse(full_path);
+        printf("%d,", getpid());
+        exit(0);
+      }
     }
 
     else
     {
-    fprintf(stdout, "%s\n", full_path);
+
+      if (strstr(ent->d_name, "-sorted-") != NULL)
+      {
+        continue;
+      }
+
+      int len = strlen(ent->d_name);
+
+      if(len < 3 || strcmp(ent->d_name + len - 4, ".csv"))
+      {
+        continue;
+      }
+
+      (*p_count)++;
+      pid_t child = fork();
+
+      if (child < 0)
+      {
+        exit(-1);
+      }
+
+      else if (child == 0)
+      {
+
+        if (output_dir == NULL)
+        {
+          output_dir = (char *) malloc(strlen(path) + 1);
+          strcpy(output_dir, path);
+        }
+
+        sort_csv(full_path);
+        printf("%d,", getpid());
+        free(output_dir);
+
+        exit(0);
+      }
     }
 
+    wait(NULL);
   }
 
   closedir(dir);
 }
 
-
 int main(int argc, char *argv[])
 {
 
-    // int segmentId = shmget(IPC_PRIVATE, sizeof(int), S_IRUSR | S_IWUSR);
-    // p_count = (int *) shmat(segmentId, NULL, 0);
-    //
-    // *p_count = 0;
-    //
-    // printf("%d\n", getpid());
+  if (argc < 3)
+  {
+    printf("Invalid number of arguments. \n");
+    exit(-1);
+  }
 
-  traverse("./files");
+  if (argc > 3 )
+  {
 
-    // printf("\n%d\n", *p_count);
+    if (strcmp(argv[3], "-o") == 0)
+    {
+
+      output_dir = (char *) malloc(strlen(argv[4]) + 1);
+      strcpy(output_dir, argv[4]);
+
+    }
+
+    else if (strcmp(argv[3], "-d") == 0)
+    {
+
+      src_dir = (char *) malloc(strlen(argv[4]) + 1);
+      strcpy(src_dir, argv[4]);
+
+    }
+  }
+
+  if (argc > 5)
+  {
+
+    if (strcmp(argv[5], "-o") == 0)
+    {
+
+      output_dir = (char *) malloc(strlen(argv[6]) + 1);
+      strcpy(output_dir, argv[6]);
+
+    }
+
+    else if (strcmp(argv[5], "-d") == 0)
+    {
+
+      src_dir = (char *) malloc(strlen(argv[6]) + 1);
+      strcpy(src_dir, argv[6]);
+
+    }
+  }
+
+  if (src_dir == NULL)
+  {
+
+    src_dir = malloc(2);
+    strcpy(src_dir, ".");
+
+  }
+
+  if (output_dir != NULL)
+  {
+
+    DIR *test = opendir(output_dir);
+    if (test == NULL)
+    {
+      exit(-1);
+    }
+  }
+
+  column = malloc(sizeof(char) * strlen(argv[2]) + 1);
+  strcpy(column, argv[2]);
+
+  int segmentId = shmget(IPC_PRIVATE, sizeof(int), S_IRUSR | S_IWUSR);
+  p_count = (int *) shmat(segmentId, NULL, 0);
+  *p_count = 1;
+
+  printf("%d\n", getpid());
+
+  traverse(src_dir);
+
+  printf("\n%d\n", *p_count);
+
+  shmdt(p_count);
+  shmctl(segmentId, IPC_RMID, NULL);
+
+  free(column);
+  free(src_dir);
 
 
-    return 0;
+  return 0;
 
 
 }

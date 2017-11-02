@@ -1,7 +1,7 @@
 all: sorter
 
 sorter:
-	gcc -Wall -Werror -o sorter sorter.c
+	gcc -o sorter sorter.c mergesort.c -Wall -Werror
 
 clean:
 	rm -rf sorter
