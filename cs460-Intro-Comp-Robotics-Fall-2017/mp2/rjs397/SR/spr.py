@@ -1,4 +1,7 @@
 import sys
+import math
+from numpy import ones, vstack
+from numpy.linalg import lstsq
 
 '''
 Report reflexive vertices
@@ -35,16 +38,144 @@ def findReflexiveVertices(polygons):
 
             vertices.append(vertex)
 
-
-
     return vertices
 
 '''
 Compute the roadmap graph
 '''
+
+def ccw(a, b, c):
+    return (c[1] - a[1]) * (b[0] - a[0]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def intersect(a, b, c, d):
+    return ccw(a, c, d) != ccw(b, c, d) and ccw(a, b, c) != ccw(a, b, d)
+
+def distance(a, b):
+
+    return math.hypot(b[0] - a[0], b[1] - a[1])
+
+def has_to_intersect(a, b, poly_a, poly_b):
+
+    for vertex_1 in poly_a:
+
+        if vertex_1 == a:
+            continue
+
+        for vertex_2 in poly_a:
+
+            if vertex_2 == a:
+                continue
+
+        if intersect(a, b, vertex_1, vertex_2):
+            return True
+
+    for vertex_1 in poly_b:
+
+        if vertex_1 == b:
+            continue
+
+        for vertex_2 in poly_b:
+
+            if vertex_2 == b:
+                continue
+
+        if intersect(a, b, vertex_1, vertex_2):
+            return True
+
+    return False
+
+def find_left_neighbor(v, polygon, reflexVertices):
+
+    current_polygon = polygon * 2
+
+    for neighbor_vertex in current_polygon[current_polygon.index(v) + 1:]:
+
+        if neighbor_vertex in reflexVertices:
+
+            return neighbor_vertex
+
+def find_right_neighbor(v, polygon, reflexVertices):
+
+    return find_left_neighbor(v, list(reversed(polygon)), reflexVertices)
+
+def above(v, m, b):
+
+    return v[1] > m * v[0] + b
+
 def computeSPRoadmap(polygons, reflexVertices):
     vertexMap = dict()
     adjacencyListMap = dict()
+
+    i = 1
+
+    for reflex_vertex in reflexVertices:
+
+        vertexMap[i] = reflex_vertex
+        adjacencyListMap[i] = []
+
+        i += 1
+
+    for reflex_vertex in reflexVertices:
+
+        vertex_label = [key for key, val in vertexMap.iteritems() if reflex_vertex == val][0]
+
+        for polygon in polygons:
+            if reflex_vertex in polygon:
+                current_polygon = polygon
+                break
+
+        left_neighbor = find_left_neighbor(reflex_vertex, current_polygon, reflexVertices)
+        left_neighbor_label = [key for key, val in vertexMap.iteritems() if left_neighbor == val][0]
+        left_neighbor_dist = distance(reflex_vertex, left_neighbor)
+
+        adjacencyListMap[vertex_label].append([left_neighbor_label, left_neighbor_dist])
+
+
+        right_neighbor = find_right_neighbor(reflex_vertex, current_polygon, reflexVertices)
+        right_neighbor_label = [key for key, val in vertexMap.iteritems() if right_neighbor == val][0]
+        right_neighbor_dist = distance(reflex_vertex, right_neighbor)
+
+        adjacencyListMap[vertex_label].append([right_neighbor_label, right_neighbor_dist])
+
+        # find bitangents, by connecting to other polygons
+
+        for other_polygon in polygons:
+
+            if other_polygon == current_polygon:
+
+                continue
+
+            for other_vertex in other_polygon:
+
+                if other_vertex not in reflexVertices:
+                    continue
+
+                # if visible to other vertex, check if bitangent
+
+                if not has_to_intersect(reflex_vertex, other_vertex, current_polygon, other_polygon):
+
+                    # if bitangent, add to adjancencyListMap
+
+                    x_coors, y_coors = zip(*[reflex_vertex, other_vertex])
+                    A = vstack([x_coors, ones(len(x_coors))]).T
+                    m, b = lstsq(A, y_coors)[0]
+
+                    a_left_neighbor = find_left_neighbor(reflex_vertex, current_polygon, reflexVertices)
+                    a_right_neighbor = find_right_neighbor(reflex_vertex, current_polygon, reflexVertices)
+
+                    b_left_neighbor = find_left_neighbor(other_vertex, other_polygon, reflexVertices)
+                    b_right_neighbor = find_right_neighbor(other_vertex, other_polygon, reflexVertices)
+
+                    if  above(a_left_neighbor, m, b) == above(a_right_neighbor, m, b) \
+                    and above(b_left_neighbor, m, b) == above(b_right_neighbor, m, b):
+
+                        other_label = [key for key, val in vertexMap.iteritems() if other_vertex == val][0]
+                        other_dist = distance(reflex_vertex, other_vertex)
+
+                        adjacencyListMap[vertex_label].append([other_label, other_dist])
+
+    print adjacencyListMap
+        #
 
     # Your code goes here
     # You should check for each pair of vertices whether the
@@ -92,6 +223,8 @@ def updateRoadmap(polygons, vertexMap, adjListMap, x1, y1, x2, y2):
     # for the start and goal vertices in the shortest path
     # roadmap. Note that what you do here is similar to
     # when you construct the roadmap.
+
+    updatedALMap = adjListMap
 
     return startLabel, goalLabel, updatedALMap
 
