@@ -2,6 +2,7 @@ import sys
 import math
 from numpy import ones, vstack
 from numpy.linalg import lstsq
+from Queue import PriorityQueue
 
 '''
 Report reflexive vertices
@@ -174,8 +175,6 @@ def computeSPRoadmap(polygons, reflexVertices):
 
                         adjacencyListMap[vertex_label].append([other_label, other_dist])
 
-    print adjacencyListMap
-        #
 
     # Your code goes here
     # You should check for each pair of vertices whether the
@@ -195,9 +194,25 @@ def computeSPRoadmap(polygons, reflexVertices):
 '''
 Perform uniform cost search
 '''
+
+class PQ(PriorityQueue):
+
+    def __init__(self):
+        PriorityQueue.__init__(self)
+        self.counter = 0
+
+    def put(self, item, priority):
+        PriorityQueue.put(self, (priority, self.counter, item))
+        self.counter += 1
+
+    def pop(self, *args, **kwargs):
+        _, _, item = PriorityQueue.get(self, *args, **kwargs)
+        return item
+
 def uniformCostSearch(adjListMap, start, goal):
     path = []
     pathLength = 0
+
 
     # Your code goes here. As the result, the function should
     # return a list of vertex labels, e.g.
@@ -206,6 +221,27 @@ def uniformCostSearch(adjListMap, start, goal):
     #
     # in which 23 would be the label for the start and 37 the
     # label for the goal.
+    # 
+    # node = start
+    # cost = 0
+    # frontier = PQ()
+    # explored = []
+    #
+    # frontier.put(node, cost)
+    #
+    # while True:
+    #
+    #     if frontier.empty()
+    #         return path, pathLength
+    #
+    #     node = frontier.pop()
+    #
+    #     if node == goal:
+    #         return path, pathLength
+    #
+    #     for neighbor in adjListMap[node]:
+    #
+    #         if neighbor[0] not in explored and neighbor[0] not in frontier
 
     return path, pathLength
 
