@@ -257,7 +257,7 @@ void write_list(const char *f_path)
 
   // printf("%s\n", f_path);
 
-  printf("\n\n %s \n\n", f_path);
+  // printf("\n\n %s \n\n", f_path);
   // char *f_name = strrchr(f_path, '/');
   //
   // if (f_name != NULL)
@@ -271,32 +271,37 @@ void write_list(const char *f_path)
   //
   // // char *output_path = (char *) malloc(strlen(output_dir) + 1 + strlen(f_name) + 1 + 6 + 1 + strlen(column) + 4 + 1);
   //
-  // char output_path[1000];
+  char output_path[1000];
   //
-  // strcat(output_path, output_dir);
-  // strcat(output_path, "/");
-  // strcat(output_path, "AllFiles-sorted-");
-  // strcat(output_path, column);
-  // strcat(output_path, ".csv");
+
+
+  strcpy(output_path, f_path);
+  strcat(output_path, "/");
+  strcat(output_path, "AllFiles-sorted-");
+  strcat(output_path, column);
+  strcat(output_path, ".csv");
+
+  printf("\n\n %s \n\n", output_path);
+
   //
   // printf("\n\n %s \n\n", output_path);
   //
-  // FILE *fp;
+  FILE *fp;
   //
-  // fp = fopen(output_path, "ab+");
-  //
-  // fprintf(fp, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n");
-  // struct Row *ptr = head;
-  //
-  // while (ptr != NULL)
-  // {
-  //
-  //   write_row(ptr, fp);
-  //   ptr = ptr->next;
-  //
-  // }
-  //
-  // fclose(fp);
+  fp = fopen(output_path, "ab+");
+
+  fprintf(fp, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n");
+  struct Row *ptr = global_head;
+
+  while (ptr != NULL)
+  {
+
+    write_row(ptr, fp);
+    ptr = ptr->next;
+
+  }
+
+  fclose(fp);
 }
 
 void *sort_csv(void *var_name)
@@ -347,87 +352,18 @@ void *sort_csv(void *var_name)
 
   if (global_head == NULL)
   {
-    global_head = head;
 
-    //     printf("\n\n assign head %ld %s \n\n", syscall(__NR_gettid), name);
-    //
-    // fprintf(stdout, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
-    //           head->color,
-    //           head->director_name,
-    //           *head->num_critic_for_reviews,
-    //           *head->duration,
-    //           *head->director_facebook_likes,
-    //           *head->actor_3_facebook_likes,
-    //           head->actor_2_name,
-    //           *head->actor_1_facebook_likes,
-    //           *head->gross,
-    //           head->genres,
-    //           head->actor_1_name,
-    //           head->movie_title,
-    //           *head->num_voted_users,
-    //           *head->cast_total_facebook_likes,
-    //           head->actor_3_name,
-    //           *head->facenumber_in_poster,
-    //           head->plot_keywords,
-    //           head->movie_imdb_link,
-    //           *head->num_user_for_reviews,
-    //           head->language,
-    //           head->country,
-    //           head->content_rating,
-    //           *head->budget,
-    //           *head->title_year,
-    //           *head->actor_2_facebook_likes,
-    //           *head->imdb_score,
-    //           *head->aspect_ratio,
-    //           *head->movie_facebook_likes);
+    global_head = head;
 
   }
   else {
 
-    printf("\n\n merge heads %ld %s \n\n", syscall(__NR_gettid), name);
-
-    // global_head = head;
-    //
-    // fprintf(stdout, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
-    //           head->color,
-    //           head->director_name,
-    //           *head->num_critic_for_reviews,
-    //           *head->duration,
-    //           *head->director_facebook_likes,
-    //           *head->actor_3_facebook_likes,
-    //           head->actor_2_name,
-    //           *head->actor_1_facebook_likes,
-    //           *head->gross,
-    //           head->genres,
-    //           head->actor_1_name,
-    //           head->movie_title,
-    //           *head->num_voted_users,
-    //           *head->cast_total_facebook_likes,
-    //           head->actor_3_name,
-    //           *head->facenumber_in_poster,
-    //           head->plot_keywords,
-    //           head->movie_imdb_link,
-    //           *head->num_user_for_reviews,
-    //           head->language,
-    //           head->country,
-    //           head->content_rating,
-    //           *head->budget,
-    //           *head->title_year,
-    //           *head->actor_2_facebook_likes,
-    //           *head->imdb_score,
-    //           *head->aspect_ratio,
-    //           *head->movie_facebook_likes);
-
     global_head = merge_list(global_head, head);
-    // free(head);
-
-
 
   }
 
   pthread_mutex_unlock(&global_head_mutex);
 
-  head = NULL;
   fclose(fp);
   free(line);
   return NULL;
@@ -443,8 +379,6 @@ void *traverse(void *var_path)
   }
 
   const char *path = (const char *) var_path;
-  // printf("search dir %s\n", path);
-
 
   DIR *dir;
   struct dirent *ent;
