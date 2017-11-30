@@ -520,7 +520,7 @@ int main(int argc, char *argv[])
   pthread_mutex_init(&global_head_mutex, NULL);
   parent_tid = syscall(__NR_gettid);
 
-  printf("Initial PID: %ld,", parent_tid);
+  printf("Initial TID: %ld,", parent_tid);
   printf("\n\tTIDS of all child threads: ");
 
   traverse(src_dir);
