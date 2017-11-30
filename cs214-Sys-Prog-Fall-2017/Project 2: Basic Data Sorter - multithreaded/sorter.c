@@ -253,27 +253,7 @@ void write_row(struct Row *row, FILE *fp)
 void write_list(const char *f_path)
 {
 
-  // print the title row, then each successive row
-
-  // printf("%s\n", f_path);
-
-  // printf("\n\n %s \n\n", f_path);
-  // char *f_name = strrchr(f_path, '/');
-  //
-  // if (f_name != NULL)
-  // {
-  //   f_name++;
-  // }
-  //
-  // f_name[strlen(f_name) - 4] = 0;
-  //
-  // // printf("%s\n\n", f_name);
-  //
-  // // char *output_path = (char *) malloc(strlen(output_dir) + 1 + strlen(f_name) + 1 + 6 + 1 + strlen(column) + 4 + 1);
-  //
   char output_path[1000];
-  //
-
 
   strcpy(output_path, f_path);
   strcat(output_path, "/");
@@ -281,11 +261,6 @@ void write_list(const char *f_path)
   strcat(output_path, column);
   strcat(output_path, ".csv");
 
-  printf("\n\n %s \n\n", output_path);
-
-  //
-  // printf("\n\n %s \n\n", output_path);
-  //
   FILE *fp;
   //
   fp = fopen(output_path, "ab+");
@@ -423,21 +398,6 @@ void *traverse(void *var_path)
         printf("Error joining thread.\n");
         exit(2);
       }
-      // pid_t child = fork();
-
-      // if (child < 0)
-      // {
-      //   exit(-1);
-      // }
-
-      // else if (child == 0)
-      // {
-      //   traverse(full_path);
-      //   // printf("%d,", getpid());
-      //   exit(0);
-      // }
-      // traverse(full_path);
-
     }
 
     else
@@ -461,43 +421,20 @@ void *traverse(void *var_path)
 
       if (pthread_create(&sort_csv_thread, NULL, sort_csv, full_path))
       {
+
         printf("Error creating thread.\n");
         exit(1);
+
       }
 
       if (pthread_join(sort_csv_thread, NULL))
       {
+
         printf("Error joining thread.\n");
         exit(2);
+
       }
-
-      // printf("file %s\n", ent->d_name);
-
-      // pid_t child = fork();
-
-      // if (child < 0)
-      // {
-      //   exit(-1);
-      // }
-
-      // else if (child == 0)
-      // {
-      //
-      //   if (output_dir == NULL)
-      //   {
-      //     output_dir = (char *) malloc(strlen(path) + 1);
-      //     strcpy(output_dir, path);
-      //   }
-
-        // sort_csv(full_path);
-        // printf("%d,", getpid());
-        // free(output_dir);
-
-        // exit(0);
-      // }
     }
-
-    // wait(NULL);
   }
 
   closedir(dir);
@@ -580,14 +517,11 @@ int main(int argc, char *argv[])
   p_count = (int *) shmat(segmentId, NULL, 0);
   *p_count = 1;
 
-  // printf("%d\n", getpid());
-
-  // mutex = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_init(&global_head_mutex, NULL);
   parent_tid = syscall(__NR_gettid);
 
   printf("Initial PID: %ld,", parent_tid);
-  printf("\n\tTIDS of all child thread: ");
+  printf("\n\tTIDS of all child threads: ");
 
   traverse(src_dir);
 
@@ -596,7 +530,6 @@ int main(int argc, char *argv[])
   shmdt(p_count);
   shmctl(segmentId, IPC_RMID, NULL);
 
-  // write_list(output_dir);
 
   if (output_dir == NULL)
   {
