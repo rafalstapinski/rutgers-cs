@@ -1,2 +1,4 @@
 .DS_STORE
 *.dSYM
+deep*/
+shallow*/
