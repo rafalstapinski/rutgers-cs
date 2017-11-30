@@ -10,18 +10,23 @@
 #include <sys/wait.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 #include <stddef.h>
 #include <ctype.h>
+#include <pthread.h>
 #include "sorter.h"
 
 int *p_count;
 
-struct Row *head;
+// struct Row *head;
+struct Row *global_head;
 char *column;
-char *output_dir;
 char *src_dir;
-struct FileList *file_list;
+
+pthread_mutex_t global_head_mutex;
+
+long parent_tid;
 
 void strip(char *entry) {
 
@@ -77,7 +82,7 @@ char *get_entry(char *str)
 
 }
 
-void add_row(char *line) {
+struct Row *add_row(char *line, struct Row *head) {
 
   // column count
 
@@ -205,14 +210,14 @@ void add_row(char *line) {
   row->next = head;
   head = row;
 
+  return head;
+
 }
 
 void write_row(struct Row *row, FILE *fp)
 {
 
   // print each column of a row
-
-
 
   fprintf(fp, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
             row->color,
@@ -251,48 +256,55 @@ void write_list(const char *f_path)
   // print the title row, then each successive row
 
   // printf("%s\n", f_path);
-  char *f_name = strrchr(f_path, '/');
 
-  if (f_name != NULL)
-  {
-    f_name++;
-  }
-
-  f_name[strlen(f_name) - 4] = 0;
-
-  // printf("%s\n\n", f_name);
-
-  char *output_path = (char *) malloc(strlen(output_dir) + 1 + strlen(f_name) + 1 + 6 + 1 + strlen(column) + 4 + 1);
-
-  strcat(output_path, output_dir);
-  strcat(output_path, "/");
-  strcat(output_path, f_name);
-  strcat(output_path, "-sorted-");
-  strcat(output_path, column);
-  strcat(output_path, ".csv");
-
-  FILE *fp;
-
-  fp = fopen(output_path, "ab+");
-
-
-
-  fprintf(fp, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n");
-  struct Row *ptr = head;
-
-  while (ptr != NULL)
-  {
-
-    write_row(ptr, fp);
-    ptr = ptr->next;
-
-  }
-
-  fclose(fp);
+  printf("\n\n %s \n\n", f_path);
+  // char *f_name = strrchr(f_path, '/');
+  //
+  // if (f_name != NULL)
+  // {
+  //   f_name++;
+  // }
+  //
+  // f_name[strlen(f_name) - 4] = 0;
+  //
+  // // printf("%s\n\n", f_name);
+  //
+  // // char *output_path = (char *) malloc(strlen(output_dir) + 1 + strlen(f_name) + 1 + 6 + 1 + strlen(column) + 4 + 1);
+  //
+  // char output_path[1000];
+  //
+  // strcat(output_path, output_dir);
+  // strcat(output_path, "/");
+  // strcat(output_path, "AllFiles-sorted-");
+  // strcat(output_path, column);
+  // strcat(output_path, ".csv");
+  //
+  // printf("\n\n %s \n\n", output_path);
+  //
+  // FILE *fp;
+  //
+  // fp = fopen(output_path, "ab+");
+  //
+  // fprintf(fp, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n");
+  // struct Row *ptr = head;
+  //
+  // while (ptr != NULL)
+  // {
+  //
+  //   write_row(ptr, fp);
+  //   ptr = ptr->next;
+  //
+  // }
+  //
+  // fclose(fp);
 }
 
-void sort_csv(const char *name)
+void *sort_csv(void *var_name)
 {
+
+  printf("%ld,", syscall(__NR_gettid));
+
+  const char *name = (const char *) var_name;
 
   FILE *fp;
   char *line = NULL;
@@ -307,6 +319,8 @@ void sort_csv(const char *name)
   }
 
   int i = 0;
+
+  struct Row *head = NULL;
 
   while ((read = getline(&line, &len, fp)) != -1)
   {
@@ -323,21 +337,114 @@ void sort_csv(const char *name)
 
     else
     {
-      add_row(line);
+      head = add_row(line, head);
     }
   }
 
   head = msort(head);
-  write_list(name);
 
-  free(head);
+  pthread_mutex_lock(&global_head_mutex);
+
+  if (global_head == NULL)
+  {
+    global_head = head;
+
+    //     printf("\n\n assign head %ld %s \n\n", syscall(__NR_gettid), name);
+    //
+    // fprintf(stdout, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
+    //           head->color,
+    //           head->director_name,
+    //           *head->num_critic_for_reviews,
+    //           *head->duration,
+    //           *head->director_facebook_likes,
+    //           *head->actor_3_facebook_likes,
+    //           head->actor_2_name,
+    //           *head->actor_1_facebook_likes,
+    //           *head->gross,
+    //           head->genres,
+    //           head->actor_1_name,
+    //           head->movie_title,
+    //           *head->num_voted_users,
+    //           *head->cast_total_facebook_likes,
+    //           head->actor_3_name,
+    //           *head->facenumber_in_poster,
+    //           head->plot_keywords,
+    //           head->movie_imdb_link,
+    //           *head->num_user_for_reviews,
+    //           head->language,
+    //           head->country,
+    //           head->content_rating,
+    //           *head->budget,
+    //           *head->title_year,
+    //           *head->actor_2_facebook_likes,
+    //           *head->imdb_score,
+    //           *head->aspect_ratio,
+    //           *head->movie_facebook_likes);
+
+  }
+  else {
+
+    printf("\n\n merge heads %ld %s \n\n", syscall(__NR_gettid), name);
+
+    // global_head = head;
+    //
+    // fprintf(stdout, "%s,%s,%d,%d,%d,%d,%s,%d,%f,%s,%s,%s,%d,%d,%s,%d,%s,%s,%d,%s,%s,%s,%d,%d,%d,%f,%f,%d\n",
+    //           head->color,
+    //           head->director_name,
+    //           *head->num_critic_for_reviews,
+    //           *head->duration,
+    //           *head->director_facebook_likes,
+    //           *head->actor_3_facebook_likes,
+    //           head->actor_2_name,
+    //           *head->actor_1_facebook_likes,
+    //           *head->gross,
+    //           head->genres,
+    //           head->actor_1_name,
+    //           head->movie_title,
+    //           *head->num_voted_users,
+    //           *head->cast_total_facebook_likes,
+    //           head->actor_3_name,
+    //           *head->facenumber_in_poster,
+    //           head->plot_keywords,
+    //           head->movie_imdb_link,
+    //           *head->num_user_for_reviews,
+    //           head->language,
+    //           head->country,
+    //           head->content_rating,
+    //           *head->budget,
+    //           *head->title_year,
+    //           *head->actor_2_facebook_likes,
+    //           *head->imdb_score,
+    //           *head->aspect_ratio,
+    //           *head->movie_facebook_likes);
+
+    global_head = merge_list(global_head, head);
+    // free(head);
+
+
+
+  }
+
+  pthread_mutex_unlock(&global_head_mutex);
+
+  head = NULL;
   fclose(fp);
   free(line);
+  return NULL;
 
 }
 
-void traverse(const char *path)
+void *traverse(void *var_path)
 {
+
+  if (syscall(__NR_gettid) != parent_tid)
+  {
+    printf("%ld,", syscall(__NR_gettid));
+  }
+
+  const char *path = (const char *) var_path;
+  // printf("search dir %s\n", path);
+
 
   DIR *dir;
   struct dirent *ent;
@@ -368,19 +475,35 @@ void traverse(const char *path)
       }
 
       (*p_count)++;
-      pid_t child = fork();
 
-      if (child < 0)
+      pthread_t traverse_thread;
+
+      if (pthread_create(&traverse_thread, NULL, traverse, full_path))
       {
-        exit(-1);
+        printf("Error creating thread.\n");
+        exit(1);
       }
 
-      else if (child == 0)
+      if (pthread_join(traverse_thread, NULL))
       {
-        traverse(full_path);
-        printf("%d,", getpid());
-        exit(0);
+        printf("Error joining thread.\n");
+        exit(2);
       }
+      // pid_t child = fork();
+
+      // if (child < 0)
+      // {
+      //   exit(-1);
+      // }
+
+      // else if (child == 0)
+      // {
+      //   traverse(full_path);
+      //   // printf("%d,", getpid());
+      //   exit(0);
+      // }
+      // traverse(full_path);
+
     }
 
     else
@@ -399,38 +522,58 @@ void traverse(const char *path)
       }
 
       (*p_count)++;
-      pid_t child = fork();
 
-      if (child < 0)
+      pthread_t sort_csv_thread;
+
+      if (pthread_create(&sort_csv_thread, NULL, sort_csv, full_path))
       {
-        exit(-1);
+        printf("Error creating thread.\n");
+        exit(1);
       }
 
-      else if (child == 0)
+      if (pthread_join(sort_csv_thread, NULL))
       {
-
-        if (output_dir == NULL)
-        {
-          output_dir = (char *) malloc(strlen(path) + 1);
-          strcpy(output_dir, path);
-        }
-
-        sort_csv(full_path);
-        printf("%d,", getpid());
-        free(output_dir);
-
-        exit(0);
+        printf("Error joining thread.\n");
+        exit(2);
       }
+
+      // printf("file %s\n", ent->d_name);
+
+      // pid_t child = fork();
+
+      // if (child < 0)
+      // {
+      //   exit(-1);
+      // }
+
+      // else if (child == 0)
+      // {
+      //
+      //   if (output_dir == NULL)
+      //   {
+      //     output_dir = (char *) malloc(strlen(path) + 1);
+      //     strcpy(output_dir, path);
+      //   }
+
+        // sort_csv(full_path);
+        // printf("%d,", getpid());
+        // free(output_dir);
+
+        // exit(0);
+      // }
     }
 
-    wait(NULL);
+    // wait(NULL);
   }
 
   closedir(dir);
+  return NULL;
 }
 
 int main(int argc, char *argv[])
 {
+
+  char *output_dir;
 
   if (argc < 3)
   {
@@ -503,14 +646,32 @@ int main(int argc, char *argv[])
   p_count = (int *) shmat(segmentId, NULL, 0);
   *p_count = 1;
 
-  printf("%d\n", getpid());
+  // printf("%d\n", getpid());
+
+  // mutex = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_init(&global_head_mutex, NULL);
+  parent_tid = syscall(__NR_gettid);
+
+  printf("Initial PID: %ld,", parent_tid);
+  printf("\n\tTIDS of all child thread: ");
 
   traverse(src_dir);
 
-  printf("\n%d\n", *p_count);
+  printf("\n\tTotal number of threads: %d\n", *p_count);
 
   shmdt(p_count);
   shmctl(segmentId, IPC_RMID, NULL);
+
+  // write_list(output_dir);
+
+  if (output_dir == NULL)
+  {
+    write_list(".");
+  }
+  else
+  {
+    write_list(output_dir);
+  }
 
   free(column);
   free(src_dir);

@@ -33,8 +33,8 @@ struct Row {
 };
 
 struct FileContents {
-  struct Row            *file_head,
-  struct FileContents   *next
+  struct Row            *file_head;
+  struct FileContents   *next;
 };
 
 char *column;
@@ -44,7 +44,7 @@ struct Row *head;
 
 void strip(char *entry);
 char *get_entry(char *str);
-void add_row(char *line);
+struct Row *add_row(char *line, struct Row *head);
 void print_row(struct Row *row);
 void print_list();
 int main(int argc, char *argv[]);
