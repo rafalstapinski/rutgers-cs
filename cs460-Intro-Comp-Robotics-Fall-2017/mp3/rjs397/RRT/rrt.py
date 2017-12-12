@@ -144,13 +144,6 @@ def growSimpleRRT_helper(points):
         closest_pt_i = new_index
         new_index += 1
 
-        # if closest_pt in (pt1, pt2):
-        #
-        #     tree[i] = points[i]
-        #
-        #     # adjListMap[closest_pt_i] = [i, pt1_i, pt2_i]
-        #     # adjListMap[points[i]] = [closest_pt_i]
-        #     # adjListMap[pt1_i]
 
         tree[i] = points[i]
 
@@ -168,48 +161,12 @@ def growSimpleRRT_helper(points):
 
             tree[closest_pt_i] = closest_pt
 
-            # adjListMap[pt1_i].remove(pt2_i)
-            # adjListMap[pt2_i].remove(pt1_i)
-
             adjListMap[pt1_i].append(closest_pt_i)
             adjListMap[pt2_i].append(closest_pt_i)
 
             adjListMap[i] = [closest_pt_i]
 
             adjListMap[closest_pt_i] = [i, pt1_i, pt2_i]
-
-
-    # for i in points:
-    #
-    #     if i == 1:
-    #         continue
-    #
-    #     pt1, pt2 = two_closest_points(tree, points[i])
-    #     closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
-    #
-    #     adjListMap[i] = [pt1, pt2]
-    #
-    #     if closest_pt not in (pt1, pt2):
-    #         new_points.append(closest_pt)
-    #
-    # for pt in new_points:
-    #     points[len(points) + 1] = pt
-    #
-    # iter_points = copy.deepcopy(points)
-
-    # for i in range(1, len(points) + 1):
-    #
-    #     pt1, pt2 = two_closest_points(iter_points, iter_points[i])
-    #
-    #     adjListMap[i] = []
-    #     adjListMap[i].append(points.keys()[points.values().index(pt1)])
-    #     adjListMap[i].append(points.keys()[points.values().index(pt2)])
-    #
-    #     del(iter_points[i])
-    #
-    #     for k, v in iter_points.values():
-    #         if v in (pt1, pt2):
-    #             del iter_points[k]
 
     return tree, adjListMap
 
