@@ -1,9 +1,12 @@
 import sys
 import copy
+from collections import Iterable
 
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
+from matplotlib import collections as mc
 import matplotlib.patches as patches
+
 import numpy as np
 
 '''
@@ -86,10 +89,32 @@ def two_closest_points(points, point):
             pt2 = points[i]
             pt2_dist = pti_dist
 
-
     return pt1, pt2
 
-def closest_pt_on_segment(a, b, p):
+def closest_point(points, point):
+
+
+    closest_dist = sys.maxint
+    closest_pt = point
+
+    for i in points:
+
+        if points[i] == point:
+            continue
+
+        pti_dist = np.sqrt(
+            (point[0] - points[i][0])** 2
+          + (point[1] - points[i][1])** 2
+        )
+
+        if pti_dist < closest_dist:
+
+            closest_pt = points[i]
+            closest_dist = pti_dist
+
+    return closest_pt
+
+def closest_pt_on_segment(p, a, b):
 
     a_to_p = (p[0] - a[0], p[1] - a[1])
     a_to_b = (b[0] - a[0], b[1] - a[1])
@@ -130,20 +155,31 @@ def growSimpleRRT_helper(points):
 
     for i in points:
 
+        pt2_list = {}
+
+        displayRRTandPath(tree, adjListMap, None)
+
         if i in tree:
             continue
 
         adjListMap[i] = []
 
-        pt1, pt2 = two_closest_points(tree, points[i])
-        closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
-
+        pt1 = closest_point(tree, points[i])
         pt1_i = tree.keys()[tree.values().index(pt1)]
+
+        for adj in adjListMap[pt1_i]:
+            pt2_list[adj] = tree[adj]
+
+        pt2 = closest_point(pt2_list, points[i])
         pt2_i = tree.keys()[tree.values().index(pt2)]
+
+        print adjListMap
+        print points[i], pt1, pt2_list
+
+        closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
 
         closest_pt_i = new_index
         new_index += 1
-
 
         tree[i] = points[i]
 
@@ -163,6 +199,9 @@ def growSimpleRRT_helper(points):
 
             adjListMap[pt1_i].append(closest_pt_i)
             adjListMap[pt2_i].append(closest_pt_i)
+
+            # adjListMap[pt1_i].remove(pt2_i)
+            # adjListMap[pt2_i].remove(pt1_i)
 
             adjListMap[i] = [closest_pt_i]
 
@@ -216,6 +255,14 @@ def bfs(tree, start, goal):
 
             explored.append(pt)
 
+def flatten(l):
+    for i in l:
+        if isinstance(i, Iterable):
+            for x in flatten(i):
+                yield x
+        else:
+            yield i
+
 '''
 Perform basic search
 '''
@@ -231,9 +278,8 @@ def basicSearch(tree, start, goal):
     # label for the goal.
 
 
+    return list(flatten(bfs(tree, 1, 19)))
 
-
-    return bfs(tree, start, goal)
 
 '''
 Display the RRT and Path
@@ -244,6 +290,35 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
     # You could start by copying code from the function
     # drawProblem and modify it to do what you need.
     # You should draw the problem when applicable.
+
+    # plt.plot((.5, .5), marker = 'o', color = 'black')
+
+    fig, ax = setupPlot()
+
+    tree_list = []
+
+    for i in tree:
+
+        for adj in tree[i]:
+
+            tree_list.append([
+                np.asarray(points[i], dtype=np.float) / 10,
+                np.asarray(points[adj], dtype=np.float) / 10
+            ])
+
+    # print tree_list
+
+    ax.add_collection(mc.LineCollection(tree_list))
+
+    # ax.add_collection(mc.LineCollection([[(.1, .1), (.2, .2)], [(.5, .4), (.5, .6)]]))
+
+    # plt.plot(, 'bo-')
+
+    # plt.plot([.6, .4], marker='.', color='black')
+
+
+    plt.show()
+
     return
 
 '''
