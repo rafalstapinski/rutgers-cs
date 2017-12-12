@@ -345,13 +345,27 @@ def isCollisionFree(robot, point, obstacles):
     print point
     print obstacles
 
+    robot_t = []
+
     for r in robot:
 
-        if r[0] + point[0] < 0 \
-        or r[1] + point[1] < 0 \
-        or r[0] + point[0] > 10 \
-        or r[1] + point[1] > 10:
+        robot_t.append((r[0] + point[0], r[1] + point[1]))
+
+        if robot_t[-1][0] < 0 or robot_t[-1][1] < 0 or robot_t[-1][0] > 10 or robot_t[-1][1] > 10:
             return False
+    #
+    # for obstacle in obstacles:
+    #     if not collides(robot, )
+
+    print robot_t
+    print obstacles
+
+    for obstacle in obstacles:
+
+        for i in range(-1, len(obstacle)):
+
+            print i
+
 
     return True
 
@@ -364,6 +378,8 @@ def RRT(robot, obstacles, startPoint, goalPoint):
     tree = dict()
     path = []
     # Your code goes here.
+
+    isCollisionFree(robot, startPoint, obstacles)
 
     return points, tree, path
 
