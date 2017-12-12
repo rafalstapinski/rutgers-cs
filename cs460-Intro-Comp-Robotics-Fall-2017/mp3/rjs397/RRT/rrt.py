@@ -57,22 +57,12 @@ def drawProblem(robotStart, robotGoal, polygons):
         ax.add_patch(patch)
     plt.show()
 
-def two_closest_points(points, point):
+'''
+Returns closest neighbour
+'''
+def closest_point(points, point):
 
-    if point == points[1]:
-        pt1 = points[2]
-        pt2 = points[3]
-
-    elif point == points[2]:
-        pt1 = points[1]
-        pt2 = points[3]
-
-    else:
-        pt1 = points[1]
-        pt2 = points[2]
-
-    pt1_dist = np.sqrt((point[0] - pt1[0]) ** 2 + (point[1] - pt1[1]) ** 2)
-    pt2_dist = np.sqrt((point[0] - pt2[0]) ** 2 + (point[1] - pt2[1]) ** 2)
+    res_dist = sys.maxint
 
     for i in points:
 
@@ -84,24 +74,54 @@ def two_closest_points(points, point):
           + (point[1] - points[i][1])** 2
         )
 
-        if pti_dist < pt1_dist and pt2 != points[i]:
-            pt1 = points[i]
-        elif pti_dist < pt2_dist and pt1 != points[i]:
-            pt2 = points[i]
+        if pti_dist < res_dist and points[i] != point:
+            res = i
+            res_dist = pti_dist
 
-    return pt1, pt2
+    return points[res]
 
-def closest_pt_on_segment(ax, ay, bx, by, px, py):
+def closest_pt_on_segment(a, b, p):
 
-    pass
+    a_to_p = (p[0] - a[0], p[1] - a[1])
+    a_to_b = (b[0] - a[0], b[1] - a[1])
 
-def growSimpleRRT_helper(points, adjListMap):
+    a_to_b_2 = a_to_b[0] ** 2 + a_to_b[1] ** 2
+
+    a_to_b_dot_a_to_p = a_to_p[0] * a_to_b[0] + a_to_p[1] * a_to_b[1]
+
+    t = a_to_b_dot_a_to_p / a_to_b_2
+
+    if t < 0:
+        t = 0
+    elif t > 1:
+        t = 1
+
+    return (a[0] + a_to_b[0] * t, a[1] + a_to_b[1] * t)
+
+def growSimpleRRT_helper(points):
+
+    new_points = []
+    adjListMap = {}
 
     for i in points:
 
-        pt1, pt2 = two_closest_points(points, points[i])
+        pt1 = closest_point(points, points[i])
+        pt2 = closest_point({j:points[j] for j in points if points[j] != pt1}, points[i])
 
         print points[i], pt1, pt2
+        # closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
+
+        # if closest_pt not in (pt1, pt2):
+        #     new_points.append(closest_pt)
+
+    for pt in new_points:
+        points[len(points) + 1] = pt
+
+    iter_points = points
+
+
+
+    return points, adjListMap
 
 
 '''
@@ -113,13 +133,41 @@ def growSimpleRRT(points):
 
     # Your code goes here
 
-    newPoints = points
+    newPoints, adjListMap = growSimpleRRT_helper(points)
 
-    for i in points:
-
-        newPoints, adjListMap = growSimpleRRT_helper(newPoints, adjListMap)
+    print newPoints
+    print adjListMap
 
     return newPoints, adjListMap
+
+
+def bfs(tree, start, goal):
+
+    explored = []
+    queue = [[start]]
+
+    if start == goal:
+        return goal
+
+    while queue:
+
+        path = queue.pop(0)
+        pt = path[-1]
+
+        if pt not in explored:
+
+            adjacentList = tree[pt]
+
+            for adjacent in adjacentList:
+
+                new_path = [path]
+                new_path.append(adjacent)
+                queue.append(new_path)
+
+                if adjacent == goal:
+                    return new_path
+
+            explored.append(pt)
 
 '''
 Perform basic search
@@ -135,7 +183,8 @@ def basicSearch(tree, start, goal):
     # in which 23 would be the label for the start and 37 the
     # label for the goal.
 
-    return path
+    print bfs(tree, 1, 19)
+    return bfs(tree, start, goal)
 
 '''
 Display the RRT and Path
@@ -225,21 +274,21 @@ if __name__ == "__main__":
     points[3] = (6.5, 5.2)
     points[4] = (0.3, 4)
     points[5] = (6, 3.7)
-    # points[6] = (9.7, 6.4)
-    # points[7] = (4.4, 2.8)
-    # points[8] = (9.1, 3.1)
-    # points[9] = (8.1, 6.5)
-    # points[10] = (0.7, 5.4)
-    # points[11] = (5.1, 3.9)
-    # points[12] = (2, 6)
-    # points[13] = (0.5, 6.7)
-    # points[14] = (8.3, 2.1)
-    # points[15] = (7.7, 6.3)
-    # points[16] = (7.9, 5)
-    # points[17] = (4.8, 6.1)
-    # points[18] = (3.2, 9.3)
-    # points[19] = (7.3, 5.8)
-    # points[20] = (9, 0.6)
+    points[6] = (9.7, 6.4)
+    points[7] = (4.4, 2.8)
+    points[8] = (9.1, 3.1)
+    points[9] = (8.1, 6.5)
+    points[10] = (0.7, 5.4)
+    points[11] = (5.1, 3.9)
+    points[12] = (2, 6)
+    points[13] = (0.5, 6.7)
+    points[14] = (8.3, 2.1)
+    points[15] = (7.7, 6.3)
+    points[16] = (7.9, 5)
+    points[17] = (4.8, 6.1)
+    points[18] = (3.2, 9.3)
+    points[19] = (7.3, 5.8)
+    points[20] = (9, 0.6)
 
     # Printing the points
     print ""
