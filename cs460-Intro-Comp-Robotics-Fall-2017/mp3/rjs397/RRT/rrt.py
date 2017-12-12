@@ -84,9 +84,9 @@ def two_closest_points(points, point):
           + (point[1] - points[i][1])** 2
         )
 
-        if pti_dist < pt1_dist and pt1 != points[i]:
+        if pti_dist < pt1_dist and pt2 != points[i]:
             pt1 = points[i]
-        elif pti_dist < pt2_dist and pt2 != points[i]:
+        elif pti_dist < pt2_dist and pt1 != points[i]:
             pt2 = points[i]
 
     return pt1, pt2
