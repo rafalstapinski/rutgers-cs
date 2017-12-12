@@ -157,7 +157,7 @@ def growSimpleRRT_helper(points):
 
         pt2_list = {}
 
-        displayRRTandPath(tree, adjListMap, None)
+        # displayRRTandPath(tree, adjListMap, None)
 
         if i in tree:
             continue
@@ -296,6 +296,7 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
     fig, ax = setupPlot()
 
     tree_list = []
+    path_list = []
 
     for i in tree:
 
@@ -306,9 +307,20 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
                 np.asarray(points[adj], dtype=np.float) / 10
             ])
 
-    # print tree_list
+        ax.add_collection(mc.LineCollection(tree_list, color = '#000000'))
 
-    ax.add_collection(mc.LineCollection(tree_list))
+    if len(path) > 0:
+
+        for i in range(len(path) - 1):
+
+            path_list.append([
+                np.asarray(points[path[i]], dtype=np.float) / 10,
+                np.asarray(points[path[i + 1]], dtype=np.float) / 10,
+            ])
+
+        ax.add_collection(mc.LineCollection(path_list, color = '#f97306'))
+
+
 
     # ax.add_collection(mc.LineCollection([[(.1, .1), (.2, .2)], [(.5, .4), (.5, .6)]]))
 
