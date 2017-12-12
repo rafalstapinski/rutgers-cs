@@ -173,9 +173,6 @@ def growSimpleRRT_helper(points):
         pt2 = closest_point(pt2_list, points[i])
         pt2_i = tree.keys()[tree.values().index(pt2)]
 
-        print adjListMap
-        print points[i], pt1, pt2_list
-
         closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
 
         closest_pt_i = new_index
@@ -291,9 +288,24 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
     # drawProblem and modify it to do what you need.
     # You should draw the problem when applicable.
 
-    # plt.plot((.5, .5), marker = 'o', color = 'black')
-
     fig, ax = setupPlot()
+
+    if robotStart is not None:
+
+        patch = createPolygonPatch(robotStart, 'green')
+        ax.add_patch(patch)
+
+    if robotGoal is not None:
+
+        patch = createPolygonPatch(robotGoal, 'red')
+        ax.add_patch(patch)
+
+    if polygons is not None:
+
+        for p in range(0, len(polygons)):
+            patch = createPolygonPatch(polygons[p], 'gray')
+            ax.add_patch(patch)
+
 
     tree_list = []
     path_list = []
@@ -320,15 +332,6 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
 
         ax.add_collection(mc.LineCollection(path_list, color = '#f97306'))
 
-
-
-    # ax.add_collection(mc.LineCollection([[(.1, .1), (.2, .2)], [(.5, .4), (.5, .6)]]))
-
-    # plt.plot(, 'bo-')
-
-    # plt.plot([.6, .4], marker='.', color='black')
-
-
     plt.show()
 
     return
@@ -338,9 +341,19 @@ Collision checking
 '''
 def isCollisionFree(robot, point, obstacles):
 
-    # Your code goes here.
+    print robot
+    print point
+    print obstacles
 
-    return False
+    for r in robot:
+
+        if r[0] + point[0] < 0 \
+        or r[1] + point[1] < 0 \
+        or r[0] + point[0] > 10 \
+        or r[1] + point[1] > 10:
+            return False
+
+    return True
 
 '''
 The full RRT algorithm
