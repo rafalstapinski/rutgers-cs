@@ -1,4 +1,5 @@
 import sys
+import copy
 
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
@@ -57,12 +58,13 @@ def drawProblem(robotStart, robotGoal, polygons):
         ax.add_patch(patch)
     plt.show()
 
-'''
-Returns closest neighbour
-'''
-def closest_point(points, point):
+def two_closest_points(points, point):
 
-    res_dist = sys.maxint
+    pt1_dist = sys.maxint
+    pt2_dist = sys.maxint
+
+    pt1 = point
+    pt2 = point
 
     for i in points:
 
@@ -74,11 +76,18 @@ def closest_point(points, point):
           + (point[1] - points[i][1])** 2
         )
 
-        if pti_dist < res_dist and points[i] != point:
-            res = i
-            res_dist = pti_dist
+        if pti_dist < pt1_dist and pt2 != points[i] and point != points[i]:
 
-    return points[res]
+            pt1 = points[i]
+            pt1_dist = pti_dist
+
+        elif pti_dist < pt2_dist and pt1 != points[i] and point != points[i]:
+
+            pt2 = points[i]
+            pt2_dist = pti_dist
+
+
+    return pt1, pt2
 
 def closest_pt_on_segment(a, b, p):
 
@@ -100,28 +109,109 @@ def closest_pt_on_segment(a, b, p):
 
 def growSimpleRRT_helper(points):
 
-    new_points = []
     adjListMap = {}
+    tree = {}
+
+    pt1, pt2 = two_closest_points(points, points[1])
+
+    pt1_i = points.keys()[points.values().index(pt1)]
+    pt2_i = points.keys()[points.values().index(pt2)]
+
+    tree[1] = points[1]
+    tree[pt1_i] = pt1
+    tree[pt2_i] = pt2
+
+    adjListMap[1] = [pt1_i, pt2_i]
+
+    adjListMap[pt1_i] = [1]
+    adjListMap[pt2_i] = [1]
+
+    new_index = len(points) + 1
 
     for i in points:
 
-        pt1 = closest_point(points, points[i])
-        pt2 = closest_point({j:points[j] for j in points if points[j] != pt1}, points[i])
+        if i in tree:
+            continue
 
-        print points[i], pt1, pt2
-        # closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
+        adjListMap[i] = []
 
-        # if closest_pt not in (pt1, pt2):
-        #     new_points.append(closest_pt)
+        pt1, pt2 = two_closest_points(tree, points[i])
+        closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
 
-    for pt in new_points:
-        points[len(points) + 1] = pt
+        pt1_i = tree.keys()[tree.values().index(pt1)]
+        pt2_i = tree.keys()[tree.values().index(pt2)]
 
-    iter_points = points
+        closest_pt_i = new_index
+        new_index += 1
+
+        # if closest_pt in (pt1, pt2):
+        #
+        #     tree[i] = points[i]
+        #
+        #     # adjListMap[closest_pt_i] = [i, pt1_i, pt2_i]
+        #     # adjListMap[points[i]] = [closest_pt_i]
+        #     # adjListMap[pt1_i]
+
+        tree[i] = points[i]
+
+        if closest_pt == pt1:
+
+            adjListMap[pt1_i].append(i)
+            adjListMap[i].append(pt1_i)
+
+        elif closest_pt == pt2:
+
+            adjListMap[pt2_i].append(i)
+            adjListMap[i].append(pt2_i)
+
+        else:
+
+            tree[closest_pt_i] = closest_pt
+
+            # adjListMap[pt1_i].remove(pt2_i)
+            # adjListMap[pt2_i].remove(pt1_i)
+
+            adjListMap[pt1_i].append(closest_pt_i)
+            adjListMap[pt2_i].append(closest_pt_i)
+
+            adjListMap[i] = [closest_pt_i]
+
+            adjListMap[closest_pt_i] = [i, pt1_i, pt2_i]
 
 
+    # for i in points:
+    #
+    #     if i == 1:
+    #         continue
+    #
+    #     pt1, pt2 = two_closest_points(tree, points[i])
+    #     closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
+    #
+    #     adjListMap[i] = [pt1, pt2]
+    #
+    #     if closest_pt not in (pt1, pt2):
+    #         new_points.append(closest_pt)
+    #
+    # for pt in new_points:
+    #     points[len(points) + 1] = pt
+    #
+    # iter_points = copy.deepcopy(points)
 
-    return points, adjListMap
+    # for i in range(1, len(points) + 1):
+    #
+    #     pt1, pt2 = two_closest_points(iter_points, iter_points[i])
+    #
+    #     adjListMap[i] = []
+    #     adjListMap[i].append(points.keys()[points.values().index(pt1)])
+    #     adjListMap[i].append(points.keys()[points.values().index(pt2)])
+    #
+    #     del(iter_points[i])
+    #
+    #     for k, v in iter_points.values():
+    #         if v in (pt1, pt2):
+    #             del iter_points[k]
+
+    return tree, adjListMap
 
 
 '''
@@ -133,12 +223,12 @@ def growSimpleRRT(points):
 
     # Your code goes here
 
-    newPoints, adjListMap = growSimpleRRT_helper(points)
+    # newPoints, adjListMap = growSimpleRRT_helper(points)
+    #
+    # print newPoints
+    # print adjListMap
 
-    print newPoints
-    print adjListMap
-
-    return newPoints, adjListMap
+    return growSimpleRRT_helper(points)
 
 
 def bfs(tree, start, goal):
@@ -183,7 +273,9 @@ def basicSearch(tree, start, goal):
     # in which 23 would be the label for the start and 37 the
     # label for the goal.
 
-    print bfs(tree, 1, 19)
+
+
+
     return bfs(tree, start, goal)
 
 '''
