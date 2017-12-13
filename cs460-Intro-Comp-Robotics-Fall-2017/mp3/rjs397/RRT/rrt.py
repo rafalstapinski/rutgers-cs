@@ -336,6 +336,12 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
 
     return
 
+def ccw(a, b, c):
+    return (c[1] - a[1]) * (b[0] - a[0]) > (b[1] - a[1]) * (c[0] - a[0])
+
+def intersect(a, b, c, d):
+    return ccw(a, c, d) != ccw(b, c, d) and ccw(a, b, c) != ccw(a, b, d)
+
 '''
 Collision checking
 '''
@@ -353,19 +359,21 @@ def isCollisionFree(robot, point, obstacles):
 
         if robot_t[-1][0] < 0 or robot_t[-1][1] < 0 or robot_t[-1][0] > 10 or robot_t[-1][1] > 10:
             return False
-    #
-    # for obstacle in obstacles:
-    #     if not collides(robot, )
-
-    print robot_t
-    print obstacles
 
     for obstacle in obstacles:
 
-        for i in range(-1, len(obstacle)):
+        for i in range(-1, len(obstacle) - 1):
 
-            print i
+            obstacle_a = obstacle[i]
+            obstacle_b = obstacle[i + 1]
 
+            for j in range(-1, len(robot_t) - 1):
+
+                robot_c = robot_t[j]
+                robot_d = robot_t[j + 1]
+
+                if intersect(obstacle_a, obstacle_b, robot_c, robot_d):
+                    return False
 
     return True
 
@@ -378,6 +386,10 @@ def RRT(robot, obstacles, startPoint, goalPoint):
     tree = dict()
     path = []
     # Your code goes here.
+
+    # displayRRTandPath()
+
+    displayRRTandPath()
 
     isCollisionFree(robot, startPoint, obstacles)
 
