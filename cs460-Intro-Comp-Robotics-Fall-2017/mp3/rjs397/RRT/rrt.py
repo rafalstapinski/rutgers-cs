@@ -95,7 +95,6 @@ def two_closest_points(points, point):
 
 def closest_point(points, point):
 
-
     closest_dist = sys.maxint
     closest_pt = point
 
@@ -129,7 +128,6 @@ def closest_pt_on_segment(p, a, b):
         t = 1
     else:
 
-
         t = a_to_b_dot_a_to_p / a_to_b_2
 
         if t < 0:
@@ -144,21 +142,17 @@ def growSimpleRRT_helper(points):
     adjListMap = {}
     tree = {}
 
-    pt1, pt2 = two_closest_points(points, points[1])
+    pt1 = closest_point(points, points[1])
 
     pt1_i = points.keys()[points.values().index(pt1)]
-    # pt2_i = points.keys()[points.values().index(pt2)]
 
     tree[1] = points[1]
     tree[pt1_i] = pt1
-    # tree[pt2_i] = pt2
 
     adjListMap[1] = [pt1_i]
-
     adjListMap[pt1_i] = [1]
-    # adjListMap[pt2_i] = [1]
 
-    new_index = len(points) + 1
+    new_index = len(points) + 10
 
     if len(points) <= 2:
         return tree, adjListMap
@@ -169,11 +163,10 @@ def growSimpleRRT_helper(points):
 
         pt2_list = {}
 
-        # displayRRTandPath(tree, adjListMap, None)
-
         if i in tree:
             continue
 
+        tree[i] = points[i]
         adjListMap[i] = []
 
         pt1 = closest_point(tree, points[i])
@@ -187,11 +180,6 @@ def growSimpleRRT_helper(points):
 
         closest_pt = closest_pt_on_segment(points[i], pt1, pt2)
 
-        closest_pt_i = new_index
-        new_index += 1
-
-        tree[i] = points[i]
-
         if closest_pt == pt1:
 
             adjListMap[pt1_i].append(i)
@@ -204,13 +192,20 @@ def growSimpleRRT_helper(points):
 
         else:
 
+            closest_pt_i = new_index
+            new_index += 1
+
             tree[closest_pt_i] = closest_pt
 
             adjListMap[pt1_i].append(closest_pt_i)
             adjListMap[pt2_i].append(closest_pt_i)
 
-            # adjListMap[pt1_i].remove(pt2_i)
-            # adjListMap[pt2_i].remove(pt1_i)
+            if pt2_i in adjListMap[pt1_i]:
+
+                adjListMap[pt1_i].remove(pt2_i)
+
+            if pt1_i in adjListMap[pt2_i]:
+                adjListMap[pt2_i].remove(pt1_i)
 
             adjListMap[i] = [closest_pt_i]
 
@@ -427,7 +422,7 @@ def isCollisionFree(robot, point, obstacles):
 
     return True
 
-def line_works(pt1, pt2, obstacles):
+def line_works(pt1, pt2, obstacles, robot):
 
     for obstacle in obstacles:
 
@@ -436,8 +431,13 @@ def line_works(pt1, pt2, obstacles):
             obstacle_a = obstacle[i]
             obstacle_b = obstacle[i + 1]
 
-            if intersect(obstacle_a, obstacle_b, pt1, pt2):
-                return False
+            for r in robot:
+
+                pt1_t = (pt1[0] + r[0], pt1[1] + r[1])
+                pt2_t = (pt2[0] + r[0], pt2[1] + r[1])
+
+                if intersect(obstacle_a, obstacle_b, pt1_t, pt2_t):
+                    return False
 
     return True
 
@@ -454,13 +454,9 @@ def RRT(robot, obstacles, startPoint, goalPoint):
 
     k = 2
 
-    # if point works in current tree, add it
-    # then also
-    # if new point can connect to goal, search on that tree
+    done = False
 
-    while True:
-
-        line_works = False
+    while not done:
 
         new_x = random.uniform(0, 10)
         new_y = random.uniform(0, 10)
@@ -469,17 +465,32 @@ def RRT(robot, obstacles, startPoint, goalPoint):
 
         points, adjListMap = growSimpleRRT(points)
 
-        adj_pt = adjListMap[k][0]
+        adj_pt = points[adjListMap[k][0]]
 
-        if not line_works(points[k], adj_pt, obstacles):
-            continue
+        for adj in adjListMap[k]:
+            adj_pt = points[adj]
 
-        k += 1
+            if line_works(points[k], adj_pt, obstacles, robot):
 
-        if line_works(points[k], goalPoint, obstacles):
-            break
+                if line_works(points[k], goalPoint, obstacles, robot):
+                    points[sys.maxint] = goalPoint
+                    points, adjListMap = growSimpleRRT(points)
+                    done = True
+                    break
 
+                k += 1
+                break
 
+    path = basicSearch(adjListMap, 1, sys.maxint)
+
+    def start((x,y)):
+        return (x+x1, y+y1)
+    def goal((x,y)):
+        return (x+x2, y+y2)
+    robotStart = map(start, robot)
+    robotGoal = map(goal, robot)
+
+    displayRRTandPath(points, adjListMap, path, robotStart, robotGoal, obstacles)
 
     return points, tree, path
 
@@ -561,16 +572,16 @@ if __name__ == "__main__":
     print str(points)
     print ""
 
-    # points, adjListMap = growSimpleRRT(points)
+    points, adjListMap = growSimpleRRT(points)
 
     # Search for a solution
-    # path = basicSearch(adjListMap, 1, 20)
+    path = basicSearch(adjListMap, 1, 20)
 
     # Your visualization code
-    # displayRRTandPath(points, adjListMap, path)
+    displayRRTandPath(points, adjListMap, path)
 
     # Solve a real RRT problem
     RRT(robot, obstacles, (x1, y1), (x2, y2))
 
     # Your visualization code
-    # displayRRTandPath(points, adjListMap, path, robotStart, robotGoal, obstacles)
+    displayRRTandPath(points, adjListMap, path, robotStart, robotGoal, obstacles)
