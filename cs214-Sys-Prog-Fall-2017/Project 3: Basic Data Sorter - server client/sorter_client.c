@@ -120,7 +120,6 @@
 // 	return (0);
 // }
 
-
 // Author: Rafal Stapinski
 
 #define _GNU_SOURCE
@@ -139,22 +138,21 @@
 #include <ctype.h>
 #include <pthread.h>
 
+char *column;
+char *host;
+char *port;
+
 void *send_file(void *var_path)
 {
   const char *path = (const char *) var_path;
 
   printf("%s\n", path);
+
+  return NULL;
 }
 
-void *traverse(char *var_path)
+void traverse(const char *path)
 {
-
-  if (syscall(__NR_gettid) != parent_tid)
-  {
-    printf("%ld,", syscall(__NR_gettid));
-  }
-
-  const char *path = (const char *) var_path;
 
   DIR *dir;
   struct dirent *ent;
@@ -185,7 +183,7 @@ void *traverse(char *var_path)
       }
 
       traverse(full_path);
-
+    }
     else
     {
 
@@ -200,8 +198,6 @@ void *traverse(char *var_path)
       {
         continue;
       }
-
-      (*p_count)++;
 
       pthread_t send_file_pthread;
 
@@ -224,13 +220,12 @@ void *traverse(char *var_path)
   }
 
   closedir(dir);
-  return NULL;
 }
 
 int main(int argc, char *argv[])
 {
 
-  if (argc < 5)
+  if (argc < 7)
   {
     printf("Invalid number of arguments. \n");
     exit(-1);
@@ -238,20 +233,89 @@ int main(int argc, char *argv[])
 
   if (strcmp(argv[1], "-c") == 0)
   {
-    printf("%s", argv[2]);
+    column = (char *) malloc(strlen(argv[2]) + 1);
+    strcpy(column, argv[2]);
+  }
+  else
+  {
+    printf("Invalid argument order. \n");
+    exit(-1);
   }
 
-  // traverse(src_dir);
+  if (strcmp(argv[3], "-h") == 0)
+  {
+    host = (char *) malloc(strlen(argv[4]) + 1);
+    strcpy(host, argv[4]);
+  }
+  else
+  {
+    printf("Invalid argument order. \n");
+    exit(-1);
+  }
 
-  // if (output_dir == NULL)
-  // {
-  //   write_list(".");
-  // }
-  // else
-  // {
-  //   write_list(output_dir);
-  // }
-  //
+  if (strcmp(argv[5], "-p") == 0)
+  {
+    port = (char *) malloc(strlen(argv[6]) + 1);
+    strcpy(port, argv[6]);
+  }
+  else
+  {
+    printf("Invalid argument order. \n");
+    exit(-1);
+  }
+
+  char *input_dir = NULL;
+  char *output_dir = NULL;
+
+  if (argc > 7)
+  {
+
+    if (strcmp(argv[7], "-d") == 0)
+    {
+      input_dir = (char *) malloc(strlen(argv[8]) + 1);
+      strcpy(input_dir, argv[8]);
+    }
+
+    else if (strcmp(argv[7], "-o") == 0)
+    {
+      output_dir = (char *) malloc(strlen(argv[8]) + 1);
+      strcpy(output_dir, argv[8]);
+    }
+
+  }
+
+  if (argc > 9)
+  {
+
+    if (strcmp(argv[9], "-d") == 0)
+    {
+      input_dir = (char *) malloc(strlen(argv[9]) + 1);
+      strcpy(input_dir, argv[10]);
+    }
+
+    else if (strcmp(argv[9], "-o") == 0)
+    {
+      output_dir = (char *) malloc(strlen(argv[9]) + 1);
+      strcpy(output_dir, argv[10]);
+    }
+
+  }
+
+  if (!input_dir)
+  {
+    input_dir = (char *) malloc(2);
+    strcpy(input_dir, ".");
+  }
+
+  if (!output_dir)
+  {
+    output_dir = (char *) malloc(2);
+    strcpy(output_dir, ".");
+  }
+
+  traverse(input_dir);
+
+
   // free(column);
   // free(src_dir);
 
