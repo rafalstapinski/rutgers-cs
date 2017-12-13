@@ -63,36 +63,6 @@ def drawProblem(robotStart, robotGoal, polygons):
         ax.add_patch(patch)
     plt.show()
 
-def two_closest_points(points, point):
-
-    pt1_dist = sys.maxint
-    pt2_dist = sys.maxint
-
-    pt1 = point
-    pt2 = point
-
-    for i in points:
-
-        if points[i] == point:
-            continue
-
-        pti_dist = np.sqrt(
-            (point[0] - points[i][0])** 2
-          + (point[1] - points[i][1])** 2
-        )
-
-        if pti_dist < pt1_dist and pt2 != points[i] and point != points[i]:
-
-            pt1 = points[i]
-            pt1_dist = pti_dist
-
-        elif pti_dist < pt2_dist and pt1 != points[i] and point != points[i]:
-
-            pt2 = points[i]
-            pt2_dist = pti_dist
-
-    return pt1, pt2
-
 def closest_point(points, point):
 
     closest_dist = sys.maxint
@@ -115,6 +85,10 @@ def closest_point(points, point):
 
     return closest_pt
 
+
+'''
+returns the closest point to p on line defined by points a and b
+'''
 def closest_pt_on_segment(p, a, b):
 
     a_to_p = (p[0] - a[0], p[1] - a[1])
@@ -137,6 +111,9 @@ def closest_pt_on_segment(p, a, b):
 
     return (a[0] + a_to_b[0] * t, a[1] + a_to_b[1] * t)
 
+'''
+growSimpleRRT helper function, takes in points and incrementally builds up RRT
+'''
 def growSimpleRRT_helper(points):
 
     adjListMap = {}
@@ -230,7 +207,9 @@ def growSimpleRRT(points):
 
     return growSimpleRRT_helper(points)
 
-
+'''
+breadth first search
+'''
 def bfs(tree, start, goal):
 
     explored = []
@@ -259,6 +238,9 @@ def bfs(tree, start, goal):
 
             explored.append(pt)
 
+'''
+flattens nested list
+'''
 def flatten(l):
     for i in l:
         if isinstance(i, Iterable):
@@ -343,10 +325,15 @@ def displayRRTandPath(points, tree, path, robotStart = None, robotGoal = None, p
 
     return
 
+'''
+determines if polygon abc is counter clockwise
+'''
 def ccw(a, b, c):
     return (c[1] - a[1]) * (b[0] - a[0]) > (b[1] - a[1]) * (c[0] - a[0])
 
-
+'''
+checks if two lines intersect
+'''
 def intersect(a, b, c, d):
 
     # share a point - consider intersection
@@ -356,6 +343,9 @@ def intersect(a, b, c, d):
     # otherwise intersect
     return ccw(a, c, d) != ccw(b, c, d) and ccw(a, b, c) != ccw(a, b, d)
 
+'''
+checks if a point is inside a polygon
+'''
 def point_in_poly(point, poly):
 
     n = len(poly)
@@ -422,6 +412,9 @@ def isCollisionFree(robot, point, obstacles):
 
     return True
 
+'''
+checks if the new line added to RRT is valid (intersections with obstacles)
+'''
 def line_works(pt1, pt2, obstacles, robot):
 
     for obstacle in obstacles:
