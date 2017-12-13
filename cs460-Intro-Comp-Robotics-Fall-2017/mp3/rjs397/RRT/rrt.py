@@ -474,6 +474,8 @@ def RRT(robot, obstacles, startPoint, goalPoint):
         if not line_works(points[k], adj_pt, obstacles):
             continue
 
+        k += 1
+
         if line_works(points[k], goalPoint, obstacles):
             break
 
