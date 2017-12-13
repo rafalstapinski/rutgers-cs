@@ -427,24 +427,19 @@ def isCollisionFree(robot, point, obstacles):
 
     return True
 
-def split(u, v, points):
-    return [p for p in points if np.cross(p - u, v - u) < 0]
+def line_works(pt1, pt2, obstacles):
 
-def extend(u, v, points):
-    if not points:
-        return []
+    for obstacle in obstacles:
 
-    w = min(points, key=lambda p: np.cross(p - u, v - u))
-    p1, p2 = split(w, v, points), split(u, w, points)
-    return extend(w, v, p1) + [w] + extend(u, w, p2)
+        for i in range(-1, len(obstacle) - 1):
 
-def convex_hull(points):
+            obstacle_a = obstacle[i]
+            obstacle_b = obstacle[i + 1]
 
-    u = min(points, key=lambda p: p[0])
-    v = max(points, key=lambda p: p[0])
-    left, right = split(u, v, points), split(v, u, points)
+            if intersect(obstacle_a, obstacle_b, pt1, pt2):
+                return False
 
-    return [v] + extend(u, v, left) + [u] + extend(v, u, right) + [v]
+    return True
 
 '''
 The full RRT algorithm
@@ -463,18 +458,9 @@ def RRT(robot, obstacles, startPoint, goalPoint):
     # then also
     # if new point can connect to goal, search on that tree
 
-    # points = [
-    # (1, 1),
-    # (2, 2),
-    # (2, 1),
-    # (1, 2),
-    # (1, 1.5),
-    #
-    # ]
-    #
-    # print convex_hull(np.array(points))[::-1][:-1]
-
     while True:
+
+        line_works = False
 
         new_x = random.uniform(0, 10)
         new_y = random.uniform(0, 10)
@@ -483,82 +469,13 @@ def RRT(robot, obstacles, startPoint, goalPoint):
 
         points, adjListMap = growSimpleRRT(points)
 
-        k_points = np.array(robot) + np.array([new_x, new_y])
+        adj_pt = adjListMap[k][0]
 
-        for adj in adjListMap[k]:
+        if not line_works(points[k], adj_pt, obstacles):
+            continue
 
-            adj_points = np.array(robot) + np.array(points[adj])
-
-            all_new_points = np.concatenate((k_points, adj_points), axis=0)
-            convex_points = convex_hull(all_new_points)
-
-            print convex_points
-
-            if not isCollisionFree(convex_hull, (0, 0), obstacles):
-                break
-
-        raw_input()
-
-        # for r in robot:
-        #     robot_points_k.append((r[0] + new_x, r[1] + new_y))
-        #
-        # for adj in adjListMap[k]:
-        #
-        #     new_boundaries_all = []
-        #     new_boundaries_all.append(robot_points_k)
-
-
-
-
-
-
-    #
-    #
-    #
-    #     # does_not_work = False
-    #
-    #     # for adj in adjListMap[k]:
-    #     #
-    #     #     if does_not_work:
-    #     #         break
-    #     #
-    #     #     adj_pt = points[adj]
-    #     #
-    #     #     for obstacle in obstacles:
-    #     #
-    #     #         if does_not_work:
-    #     #             break
-    #     #
-    #     #         for i in range(-1, len(obstacle) - 1):
-    #     #
-    #     #             if does_not_work:
-    #     #                 break
-    #     #
-    #     #             obstacle_a = obstacle[i]
-    #     #             obstacle_b = obstacle[i + 1]
-    #     #
-    #     #             if intersect(obstacle_a, obstacle_b, points[k], adj_pt):
-    #     #                 does_not_work = True
-    #     #
-    #     #             for rpt in robot:
-    #     #                 (points[k][0] + rpt[0], points[k][1] + rpt[1])
-    #     #                 adj_pt[0] + rpt[0], adj_pt[0] + rpt
-    #     #                 if intersect(obstacle_a, obstsacle_b, points[k])
-    #
-    #     if not does_not_work:
-    #         k += 1
-
-
-
-            # displayRRTandPath(points, adjListMap, path, polygons = obstacles)
-
-
-
-    # points, adjListMap = growSimpleRRT(points)
-    # path = basicSearch(adjListMap, 1, 999999)
-    #
-    # displayRRTandPath(points, adjListMap, path, polygons = obstacles)
-
+        if line_works(points[k], goalPoint, obstacles):
+            break
 
 
 
