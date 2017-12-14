@@ -1,10 +1,11 @@
 // Author: Rafal Stapinski
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
-#include "sorter.h"
+#include "sorter_server.h"
 
-struct Row *msort(struct Row *head) {
+struct Row *msort(struct Row *head, const char *column) {
 
     struct Row *one = head;
 
@@ -17,10 +18,10 @@ struct Row *msort(struct Row *head) {
     // cut in two, and recurse
 
     struct Row *two = split_list(one);
-    return merge_list(msort(one), msort(two));
+    return merge_list(msort(one, column), msort(two, column), column);
 }
 
-struct Row* merge_list(struct Row *one, struct Row *two) {
+struct Row* merge_list(struct Row *one, struct Row *two, const char *column) {
 
     struct Row temp;
     struct Row *end = &temp;

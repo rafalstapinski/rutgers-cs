@@ -46,6 +46,8 @@ int invalid_file(const char *path)
     }
   }
 
+  return 0;
+
 }
 
 void *send_file(void *var_path)
@@ -145,6 +147,47 @@ void *send_file(void *var_path)
   close(fd);
 
   return (void *) 0;
+
+}
+
+void get_result(const char *output_dir)
+{
+
+  int sock;
+  struct sockaddr_in server_address;
+  char buffer[BUFSIZ];
+  int fd;
+  struct stat file_stat;
+
+  memset(&server_address, 0, sizeof(server_address));
+
+  server_address.sin_family = AF_INET;
+  inet_pton(AF_INET, host, &(server_address.sin_addr));
+  server_address.sin_port = htons(atoi(port));
+
+
+  sock = socket(AF_INET, SOCK_STREAM, 0);
+
+  if (sock == -1)
+  {
+    fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+
+  if (connect(sock, (struct sockaddr *)&server_address, sizeof(struct sockaddr)) == -1)
+  {
+          fprintf(stderr, "Error connecting: %s\n", strerror(errno));
+
+          exit(EXIT_FAILURE);
+  }
+
+  char action[] = "get me all of the files!";
+
+  if (send(sock, action, sizeof(action), 0) < 0)
+  {
+    fprintf(stderr, "Error sending action: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
 
 }
 
@@ -311,6 +354,8 @@ int main(int argc, char *argv[])
   }
 
   traverse(input_dir);
+
+  get_result(output_dir);
 
 
   // free(column);
