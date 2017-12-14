@@ -35,11 +35,32 @@ void *handle_connection(void *args)
   printf("Thread: %ld\n", pthread_self());
   printf("Socket: %d\n", sock);
 
+  char *file_length_str;
+  long long file_length;
+
   while (recv(sock, action, sizeof(action), 0))
   {
 
     printf("%s\n", action);
 
+    if (strcmp(action, "get me all of the files!") == 0)
+    {
+
+    }
+    else
+    {
+      for (file_length_str = action; file_length_str != '\0'; file_length_str++)
+      {
+        if (*file_length_str == ' ')
+        {
+          *file_length_str = '\0';
+          file_length_str++;
+          break;
+        }
+      }
+
+      file_length = strtoll(file_length_str);
+    }
   }
 
   // recv(sock, buffer, BUFSIZ, 0);
