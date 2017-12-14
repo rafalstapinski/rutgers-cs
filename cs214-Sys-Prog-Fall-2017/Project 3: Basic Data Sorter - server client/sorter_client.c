@@ -76,14 +76,18 @@ void *send_file(void *var_path)
   fd = open(path, O_RDONLY);
   if (fd == -1)
   {
+
     fprintf(stderr, "Error opening file: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
+
   }
 
   if (fstat(fd, &file_stat) < 0)
   {
+
       fprintf(stderr, "Error getting file stats: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
+
   }
 
   memset(action, 0, sizeof(action));
@@ -93,21 +97,26 @@ void *send_file(void *var_path)
 
   if (sock == -1)
   {
+
     fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
+
   }
 
   if (connect(sock, (struct sockaddr *)&server_address, sizeof(struct sockaddr)) == -1)
   {
-          fprintf(stderr, "Error connecting: %s\n", strerror(errno));
 
-          exit(EXIT_FAILURE);
+    fprintf(stderr, "Error connecting: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+
   }
 
   if (send(sock, action, sizeof(action), 0) < 0)
   {
+
     fprintf(stderr, "Error sending action: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
+
   }
 
   int rd;
@@ -122,14 +131,18 @@ void *send_file(void *var_path)
     }
     else if (rd == -1)
     {
+
       fprintf(stderr, "Unable to read file: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
+
     }
 
     if(write(sock, buffer, rd) == -1)
     {
+
       fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
+
     }
 
   }
@@ -139,8 +152,10 @@ void *send_file(void *var_path)
 
   if (strcmp(response, "sorted") != 0)
   {
+
     printf("Server could not sort. \n");
     exit(EXIT_FAILURE);
+
   }
 
   close(sock);
@@ -156,6 +171,7 @@ void get_result(const char *output_dir)
   int sock;
   struct sockaddr_in server_address;
   char buffer[BUFSIZ];
+  char action[] = "get me all of the files!";
   int fd;
   struct stat file_stat;
 
@@ -170,24 +186,29 @@ void get_result(const char *output_dir)
 
   if (sock == -1)
   {
+
     fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
+
   }
 
   if (connect(sock, (struct sockaddr *)&server_address, sizeof(struct sockaddr)) == -1)
   {
-          fprintf(stderr, "Error connecting: %s\n", strerror(errno));
 
-          exit(EXIT_FAILURE);
+    fprintf(stderr, "Error connecting: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+
   }
-
-  char action[] = "get me all of the files!";
 
   if (send(sock, action, sizeof(action), 0) < 0)
   {
+
     fprintf(stderr, "Error sending action: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
+
   }
+
+  while (recv(sock, buffer, BUFSIZ, 0))
 
 }
 
@@ -355,7 +376,7 @@ int main(int argc, char *argv[])
 
   traverse(input_dir);
 
-  get_result(output_dir);
+  get_result(output_dir, column);
 
 
   // free(column);

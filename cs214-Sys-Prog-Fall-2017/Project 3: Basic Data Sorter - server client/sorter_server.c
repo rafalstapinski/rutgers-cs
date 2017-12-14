@@ -345,14 +345,73 @@ void *handle_connection(void *args)
   char *file_length_str;
   long long file_length;
 
+  struct stat file_stat;
+
   while (recv(sock, action, sizeof(action), 0))
   {
 
-    printf("%s\n", action);
-
     if (strcmp(action, "get me all of the files!") == 0)
     {
+
       write_list();
+
+
+      fd = open("/tmp/raf-sorted", O_RDONLY);
+      if (fd == -1)
+      {
+
+        fprintf(stderr, "Error opening file: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+
+      }
+
+      if (fstat(fd, &file_stat) < 0)
+      {
+
+          fprintf(stderr, "Error getting file stats: %s\n", strerror(errno));
+          exit(EXIT_FAILURE);
+
+      }
+
+      file_length = file_stat.st_size
+      sprintf(file_length_str, "%zd", file_length);
+
+      if (send(sock, action, sizeof(action), 0) < 0)
+      {
+
+        fprintf(stderr, "Error sending action: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
+
+      }
+
+      // int rd;
+      //
+      // while (1)
+      // {
+      //   rd = read(fd, buffer, BUFSIZ);
+      //
+      //   if (rd == 0)
+      //   {
+      //     break;
+      //   }
+      //   else if (rd == -1)
+      //   {
+      //
+      //     fprintf(stderr, "Unable to read file: %s\n", strerror(errno));
+      //     exit(EXIT_FAILURE);
+      //
+      //   }
+      //
+      //   if(write(sock, buffer, rd) == -1)
+      //   {
+      //
+      //     fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
+      //     exit(EXIT_FAILURE);
+      //
+      //   }
+      //
+      // }
+
       return (void *) 0;
 
     }
@@ -503,6 +562,8 @@ int main(int argc, char *argv[])
     }
 
   }
+
+  free(global_head);
 
   printf("\n");
   pthread_exit(NULL);
