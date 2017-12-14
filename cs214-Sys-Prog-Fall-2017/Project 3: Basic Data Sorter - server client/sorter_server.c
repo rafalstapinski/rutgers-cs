@@ -49,8 +49,10 @@ void *handle_connection(void *args)
     }
     else
     {
+
       for (file_length_str = action; file_length_str != '\0'; file_length_str++)
       {
+
         if (*file_length_str == ' ')
         {
           *file_length_str = '\0';
@@ -59,7 +61,57 @@ void *handle_connection(void *args)
         }
       }
 
-      file_length = strtoll(file_length_str);
+      char filename[] = "/tmp/raf-      ";
+      const char alphabet[] = "qwertyuiopasdfghjklzxcvbnm";
+      int i = 0;
+      for (i = 9; i < 15; i++)
+      {
+        filename[i] = alphabet[rand() % strlen(alphabet)];
+      }
+
+      file_length = strtoll(file_length_str, NULL, 10);
+
+      int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+      if (fd == -1)
+      {
+        fprintf(stderr, "Unable to create temp file: %s", strerror(errno));
+        exit(EXIT_FAILURE);
+      }
+
+      ssize_t rd;
+      for (; file_length > 0; file_length -= rd)
+      {
+
+        rd = BUFSIZ;
+
+        if (rd > file_length)
+        {
+          rd = file_length;
+        }
+
+        rd = read(sock, buffer, rd);
+
+        if (rd == -1)
+        {
+          fprintf(stderr, "Unable to read file: %s", strerror(errno));
+          exit(EXIT_FAILURE);
+        }
+        else if (rd == 0)
+        {
+          break;
+        }
+
+        if (write(fd, buffer, rd) == -1)
+        {
+          fprintf(stderr, "Unable to write to file: %s", strerror(errno));
+          exit(EXIT_FAILURE);
+        }
+
+      }
+
+      printf("\n\n");
+
+      close(fd);
     }
   }
 

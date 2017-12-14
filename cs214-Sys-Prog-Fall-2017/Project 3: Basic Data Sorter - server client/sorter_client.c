@@ -104,6 +104,30 @@ void *send_file(void *var_path)
     exit(EXIT_FAILURE);
   }
 
+  int rd;
+
+  while (1)
+  {
+    rd = read(fd, buffer, BUFSIZ);
+
+    if (rd == 0)
+    {
+      break;
+    }
+    else if (rd == -1)
+    {
+      fprintf(stderr, "Unable to read file: %s", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+
+    if(write(sock, buffer, rd) == -1)
+    {
+      fprintf(stderr, "Unable to write to socket: %s", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+
+  }
+
   // int sent;
   // int remaining = file_stat.st_size;
   //
