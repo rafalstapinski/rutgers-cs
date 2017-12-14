@@ -1,154 +1,156 @@
-#include <stdlib.h>
+/* Server code */
+/* TODO : Modify to meet your need */
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include <signal.h>
-#include <ctype.h>
 #include <arpa/inet.h>
-#include <netdb.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/sendfile.h>
 
-#define PORT 20000
-#define BACKLOG 5
-#define LENGTH 512
+#define PORT_NUMBER     5000
+#define SERVER_ADDRESS  "127.0.0.1"
+#define FILE_TO_SEND    "hello.txt"
 
-void error(const char *msg)
+void *handle_connection(void *var)
 {
-	perror(msg);
-	exit(1);
+
+  int client_socket = (int) var;
+
+  printf("new connection: %d\n", client_socket);
+  // printf("new connection\n");
+  //
+  // recv(client_socket, buffer, BUFSIZ, 0);
+  //
+  // printf("%s\n", buffer);
+
+  close(client_socket);
+
 }
 
-int main ()
+int main(int argc, char **argv)
 {
-	/* Defining Variables */
-	int sockfd;
-	int nsockfd;
-	int num;
-	int sin_size;
-	struct sockaddr_in addr_local; /* client addr */
-	struct sockaddr_in addr_remote; /* server addr */
-	char revbuf[LENGTH]; // Receiver buffer
+        int server_socket;
+        int client_socket;
+        socklen_t       sock_len;
+        // ssize_t len;
+        char buffer[BUFSIZ];
+        struct sockaddr_in      server_addr;
+        struct sockaddr_in      client_address;
+        int fd;
+        // int sent_bytes = 0;
+        // char file_size[256];
+        struct stat file_stat;
+        // off_t offset;
+        // int remain_data;
 
-	/* Get the Socket file descriptor */
-	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1 )
-	{
-		fprintf(stderr, "ERROR: Failed to obtain Socket Descriptor. (errno = %d)\n", errno);
-		exit(1);
-	}
-	else
-		printf("[Server] Obtaining socket descriptor successfully.\n");
+        /* Create server socket */
+        server_socket = socket(AF_INET, SOCK_STREAM, 0);
+        if (server_socket == -1)
+        {
+                fprintf(stderr, "Error creating socket --> %s", strerror(errno));
 
-	/* Fill the client socket address struct */
-	addr_local.sin_family = AF_INET; // Protocol Family
-	addr_local.sin_port = htons(PORT); // Port number
-	addr_local.sin_addr.s_addr = INADDR_ANY; // AutoFill local address
-	bzero(&(addr_local.sin_zero), 8); // Flush the rest of struct
+                exit(EXIT_FAILURE);
+        }
 
-	/* Bind a special Port */
-	if( bind(sockfd, (struct sockaddr*)&addr_local, sizeof(struct sockaddr)) == -1 )
-	{
-		fprintf(stderr, "ERROR: Failed to bind Port. (errno = %d)\n", errno);
-		exit(1);
-	}
-	else
-		printf("[Server] Binded tcp port %d in addr 127.0.0.1 sucessfully.\n",PORT);
+        /* Zeroing server_addr struct */
+        memset(&server_addr, 0, sizeof(server_addr));
+        /* Construct server_addr struct */
+        server_addr.sin_family = AF_INET;
+        inet_pton(AF_INET, SERVER_ADDRESS, &(server_addr.sin_addr));
+        server_addr.sin_port = htons(PORT_NUMBER);
 
-	/* Listen remote connect/calling */
-	if(listen(sockfd,BACKLOG) == -1)
-	{
-		fprintf(stderr, "ERROR: Failed to listen Port. (errno = %d)\n", errno);
-		exit(1);
-	}
-	else
-		printf ("[Server] Listening the port %d successfully.\n", PORT);
+        /* Bind */
+        if ((bind(server_socket, (struct sockaddr *)&server_addr, sizeof(struct sockaddr))) == -1)
+        {
+                fprintf(stderr, "Error on bind --> %s", strerror(errno));
 
-	int success = 0;
-	while(success == 0)
-	{
-		sin_size = sizeof(struct sockaddr_in);
+                exit(EXIT_FAILURE);
+        }
 
-		/* Wait a connection, and obtain a new socket file despriptor for single connection */
-		if ((nsockfd = accept(sockfd, (struct sockaddr *)&addr_remote, &sin_size)) == -1)
-		{
-		    fprintf(stderr, "ERROR: Obtaining new Socket Despcritor. (errno = %d)\n", errno);
-			exit(1);
-		}
-		else
-			printf("[Server] Server has got connected from %s.\n", inet_ntoa(addr_remote.sin_addr));
+        /* Listening to incoming connections */
+        if ((listen(server_socket, 5)) == -1)
+        {
+                fprintf(stderr, "Error on listen --> %s", strerror(errno));
 
-		/*Receive File from Client */
-		char* fr_name = "/home/aryan/Desktop/receive.txt";
-		FILE *fr = fopen(fr_name, "a");
-		if(fr == NULL)
-			printf("File %s Cannot be opened file on server.\n", fr_name);
-		else
-		{
-			bzero(revbuf, LENGTH);
-			int fr_block_sz = 0;
-			while((fr_block_sz = recv(nsockfd, revbuf, LENGTH, 0)) > 0)
-			{
-			    int write_sz = fwrite(revbuf, sizeof(char), fr_block_sz, fr);
-				if(write_sz < fr_block_sz)
-			    {
-			        error("File write failed on server.\n");
-			    }
-				bzero(revbuf, LENGTH);
-				if (fr_block_sz == 0 || fr_block_sz != 512)
-				{
-					break;
-				}
-			}
-			if(fr_block_sz < 0)
-		    {
-		        if (errno == EAGAIN)
-	        	{
-	                printf("recv() timed out.\n");
-	            }
-	            else
-	            {
-	                fprintf(stderr, "recv() failed due to errno = %d\n", errno);
-					exit(1);
-	            }
-        	}
-			printf("Ok received from client!\n");
-			fclose(fr);
-		}
+                exit(EXIT_FAILURE);
+        }
 
-		/* Call the Script */
-		system("cd ; chmod +x script.sh ; ./script.sh");
+        // fd = open(FILE_TO_SEND, O_RDONLY);
+        // if (fd == -1)
+        // {
+        //         fprintf(stderr, "Error opening file --> %s", strerror(errno));
+        //
+        //         exit(EXIT_FAILURE);
+        // }
+        //
+        // /* Get file stats */
+        // if (fstat(fd, &file_stat) < 0)
+        // {
+        //         fprintf(stderr, "Error fstat --> %s", strerror(errno));
+        //
+        //         exit(EXIT_FAILURE);
+        // }
+        //
+        // fprintf(stdout, "File Size: \n%zd bytes\n", file_stat.st_size);
 
-		/* Send File to Client */
-		//if(!fork())
-		//{
-		    char* fs_name = "/home/aryan/Desktop/output.txt";
-		    char sdbuf[LENGTH]; // Send buffer
-		    printf("[Server] Sending %s to the Client...", fs_name);
-		    FILE *fs = fopen(fs_name, "r");
-		    if(fs == NULL)
-		    {
-		        fprintf(stderr, "ERROR: File %s not found on server. (errno = %d)\n", fs_name, errno);
-				exit(1);
-		    }
+        sock_len = sizeof(struct sockaddr_in);
+        /* Accepting incoming peers */
+        // client_socket = accept(server_socket, (struct sockaddr *)&client_address, &sock_len);
 
-		    bzero(sdbuf, LENGTH);
-		    int fs_block_sz;
-		    while((fs_block_sz = fread(sdbuf, sizeof(char), LENGTH, fs))>0)
-		    {
-		        if(send(nsockfd, sdbuf, fs_block_sz, 0) < 0)
-		        {
-		            fprintf(stderr, "ERROR: Failed to send file %s. (errno = %d)\n", fs_name, errno);
-		            exit(1);
-		        }
-		        bzero(sdbuf, LENGTH);
-		    }
-		    printf("Ok sent to client!\n");
-		    success = 1;
-		    close(nsockfd);
-		    printf("[Server] Connection with Client closed. Server will wait now...\n");
-		    while(waitpid(-1, NULL, WNOHANG) > 0);
-		//}
-	}
+        while ((client_socket = accept(server_socket, (struct sockaddr *) &client_address, &sock_len)) != -1)
+        {
+
+          pthread_t handle;
+
+          if (pthread_create(&handle, NULL, handle_connection, (void *) client_socket))
+          {
+
+            printf("Error creating thread.\n");
+            exit(1);
+
+          }
+
+        }
+
+        // if (client_socket == -1)
+        // {
+        //         fprintf(stderr, "Error on accept --> %s", strerror(errno));
+        //
+        //         exit(EXIT_FAILURE);
+        // }
+        // fprintf(stdout, "Accept peer --> %s\n", inet_ntoa(client_address.sin_addr));
+        //
+        // sprintf(file_size, "%zd", file_stat.st_size);
+        //
+        // /* Sending file size */
+        // len = send(client_socket, file_size, sizeof(file_size), 0);
+        // if (len < 0)
+        // {
+        //       fprintf(stderr, "Error on sending greetings --> %s", strerror(errno));
+        //
+        //       exit(EXIT_FAILURE);
+        // }
+        //
+        // fprintf(stdout, "Server sent %zd bytes for the size\n", len);
+        //
+        // offset = 0;
+        // remain_data = file_stat.st_size;
+        // /* Sending file data */
+        // while (((sent_bytes = sendfile(client_socket, fd, &offset, BUFSIZ)) > 0) && (remain_data > 0))
+        // {
+        //         fprintf(stdout, "1. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent_bytes, offset, remain_data);
+        //         remain_data -= sent_bytes;
+        //         fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent_bytes, offset, remain_data);
+        // }
+        //
+        // close(client_socket);
+        // close(server_socket);
+
+        return 0;
 }
