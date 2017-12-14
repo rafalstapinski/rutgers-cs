@@ -1,5 +1,5 @@
-/* Server code */
-/* TODO : Modify to meet your need */
+// Author: Rafal Stapinski
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,34 +12,94 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/sendfile.h>
+#include <pthread.h>
 
 #define PORT_NUMBER     5000
 #define SERVER_ADDRESS  "127.0.0.1"
 #define FILE_TO_SEND    "hello.txt"
 
-void *handle_connection(void *var)
+struct worker_args {
+  int socket;
+};
+
+void *handle_connection(void *args)
 {
 
-  int client_socket = (int) var;
-
-  printf("new connection: %d\n", client_socket);
-  // printf("new connection\n");
+  struct worker_args *worker;
+  worker = (struct worker_args *) args;
   //
-  // recv(client_socket, buffer, BUFSIZ, 0);
-  //
-  // printf("%s\n", buffer);
+  char buffer[BUFSIZ];
+  char action[BUFSIZ];
+  int sock = worker->socket;
 
-  close(client_socket);
+  printf("Thread: %ld\n", pthread_self());
+  printf("Socket: %d\n", sock);
+
+  while (recv(sock, action, sizeof(action), 0))
+  {
+
+    printf("%s\n", action);
+
+  }
+
+  // recv(sock, buffer, BUFSIZ, 0);
+  // printf("%d - %s\n", sock, buffer);
+  //
+  // char filename[] = "/tmp/raf-aaaaaa";
+  // const char alphabet[] = "qwertyuiopasdfghjklzxcvbnm";
+  // int i = 0;
+  // for (i = 9; i < 15; i++)
+  // {
+  //   filename[i] = alphabet[rand() % strlen(alphabet)];
+  // }
+  //
+  //
+  // printf("%s\n", filename);
+  //
+  //
+  // /* Receiving file size */
+  // recv(sock, buffer, BUFSIZ, 0);
+  // int file_size = atoi(buffer);
+  // // fprintf(stdout, "\nFile size : %d\n", file_size);
+  //
+  // FILE *received_file;
+  //
+  // received_file = fopen(filename, "w");
+  // if (received_file == NULL)
+  // {
+  //         fprintf(stderr, "Failed to open file foo --> %s\n", strerror(errno));
+  //
+  //         exit(EXIT_FAILURE);
+  // }
+  //
+  //
+  // int received = 0;
+  // int remaining = file_size;
+  //
+  // while (((received = recv(sock, buffer, BUFSIZ, 0)) > 0) && (remaining > 0))
+  // {
+  //   fwrite(buffer, sizeof(char), received, received_file);
+  //
+  //   // printf("%s\n\n", buffer);
+  //
+  //   remaining -= received;
+  // }
+
+  // fclose(received_file);
+  close(sock);
+  free(worker);
+
+  return (void *) 0;
 
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
         int server_socket;
         int client_socket;
         socklen_t       sock_len;
         // ssize_t len;
-        char buffer[BUFSIZ];
+
         struct sockaddr_in      server_addr;
         struct sockaddr_in      client_address;
         int fd;
@@ -48,6 +108,8 @@ int main(int argc, char **argv)
         struct stat file_stat;
         // off_t offset;
         // int remain_data;
+
+        struct worker_args *worker;
 
         /* Create server socket */
         server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -103,12 +165,20 @@ int main(int argc, char **argv)
         /* Accepting incoming peers */
         // client_socket = accept(server_socket, (struct sockaddr *)&client_address, &sock_len);
 
+        char ip[INET_ADDRSTRLEN];
+
         while ((client_socket = accept(server_socket, (struct sockaddr *) &client_address, &sock_len)) != -1)
         {
 
-          pthread_t handle;
+          // inet_ntop(AF_INET, &client_address, ip, INET_ADDRSTRLEN);
+          // printf("%s,", ip);
 
-          if (pthread_create(&handle, NULL, handle_connection, (void *) client_socket))
+          pthread_t handle_thread;
+
+          worker = malloc(sizeof(struct worker_args));
+          worker->socket = client_socket;
+
+          if (pthread_create(&handle_thread, NULL, handle_connection, worker))
           {
 
             printf("Error creating thread.\n");
@@ -116,7 +186,18 @@ int main(int argc, char **argv)
 
           }
 
+          // if (pthread_join(handle_thread, NULL))
+          // {
+          //
+          //   printf("Error joining thread.\n");
+          //   exit(2);
+          //
+          // }
+
         }
+
+        printf("\n");
+        pthread_exit(NULL);
 
         // if (client_socket == -1)
         // {

@@ -41,12 +41,14 @@ void *send_file(void *var_path)
   ssize_t len;
   struct sockaddr_in remote_addr;
   char buffer[BUFSIZ];
+  char action[BUFSIZ];
   // int res_size;
   int file_size;
   // FILE *received_file;
   int fd;
   struct stat file_stat;
   int remain_data = 0;
+  off_t offset;
 
   /* Zeroing remote_addr struct */
   memset(&remote_addr, 0, sizeof(remote_addr));
@@ -55,6 +57,23 @@ void *send_file(void *var_path)
   remote_addr.sin_family = AF_INET;
   inet_pton(AF_INET, host, &(remote_addr.sin_addr));
   remote_addr.sin_port = htons(atoi(port));
+
+  fd = open(path, O_RDONLY);
+  if (fd == -1)
+  {
+          fprintf(stderr, "Error opening file --> %s", strerror(errno));
+          exit(EXIT_FAILURE);
+  }
+
+  /* Get file stats */
+  if (fstat(fd, &file_stat) < 0)
+  {
+          fprintf(stderr, "Error fstat --> %s", strerror(errno));
+          exit(EXIT_FAILURE);
+  }
+
+  memset(action, 0, sizeof(action));
+  sprintf(action, "%s %zd", column, file_stat.st_size);
 
   /* Create client socket */
   sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -73,43 +92,67 @@ void *send_file(void *var_path)
           exit(EXIT_FAILURE);
   }
 
-  fd = open(path, O_RDONLY);
-  if (fd == -1)
-  {
-          fprintf(stderr, "Error opening file --> %s", strerror(errno));
-
-          exit(EXIT_FAILURE);
-  }
-  //
-  /* Get file stats */
-  if (fstat(fd, &file_stat) < 0)
-  {
-          fprintf(stderr, "Error fstat --> %s", strerror(errno));
-
-          exit(EXIT_FAILURE);
-  }
-
   // fprintf(stdout, "%zd\n", file_stat.st_size);
 
   //
-  // /* Sending file size */
+  /* Sending file size */
   // len = send(client_socket, file_stat.st_size, sizeof(file_stat.st_size), 0);
-  // if (send(sock, file_stat.st_size, sizeof(file_stat.st_size), 0) < 0)
-  // {
-  //       fprintf(stderr, "Error on sending greetings --> %s", strerror(errno));
+
+  if (send(sock, action, sizeof(action), 0) < 0)
+  {
+    fprintf(stderr, "%s", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+
+  // int sent;
+  // int remaining = file_stat.st_size;
   //
-  //       exit(EXIT_FAILURE);
+  // printf("%s\n\n", path);
+
+  // while (((sent = sendfile(sock, fd, &offset, BUFSIZ)) > 0) && (remaining > 0))
+  // {
+  //   printf("okko");
+  //   fprintf(stdout, "1. Serversent sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
+  //   remaining -= sent;
+  //   fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
   // }
 
-  if (send(sock, "thingy", strlen("thingy") + 1, 0) < 0)
-  {
-
-    fprintf(stderr, "Error on sending greetings --> %s", strerror(errno));
-
-        exit(EXIT_FAILURE);
-
-  }
+  // if (send(sock, " ", 1, 0) < 0)
+  // {
+  //   fprintf(stderr, "%s", strerror(errno));
+  //   exit(EXIT_FAILURE);
+  // }
   //
+  // if (send(sock, column, strlen(column), 0) < 0)
+  // {
+  //   fprintf(stderr, "%s", strerror(errno));
+  //   exit(EXIT_FAILURE);
+  // }
+  //
+  // if (send(sock, " ", 1, 0) < 0)
+  // {
+  //   fprintf(stderr, "%s", strerror(errno));
+  //   exit(EXIT_FAILURE);
+  // }
+  //
+  // if (send(sock, path, strlen(path), 0) < 0)
+  // {
+  //   fprintf(stderr, "%s", strerror(errno));
+  //   exit(EXIT_FAILURE);
+  // }
+  //
+  // int remaining = file_stat.st_size;
+  // /* Sending file data */
+  //
+  // int sent;
+  //
+  // while (((sent = sendfile(socket, fd, &offset, BUFSIZ)) > 0) && (remaining > 0))
+  // {
+  //   fprintf(stdout, "1. Serversent sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
+  //   remaining -= sent;
+  //   fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
+  // }
+
   // fprintf(stdout, "Server sent %zd bytes for the size\n", len);
   //
   // offset = 0;
@@ -146,8 +189,9 @@ void *send_file(void *var_path)
   // fclose(received_file);
 
   close(sock);
+  close(fd);
 
-  return 0;
+  return (void *) 0;
 
 }
 
