@@ -23,10 +23,15 @@ char *column;
 char *host;
 char *port;
 
-int valid_file(const char *path)
+int invalid_file(const char *path)
 {
 
-  int fp = fopen(path, "r");
+  FILE *fp;
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
+
+  fp = fopen(path, "r");
 
   if ((read = getline(&line, &len, fp)) != -1)
   {
@@ -48,7 +53,7 @@ void *send_file(void *var_path)
 
   const char *path = (const char *) var_path;
 
-  if (!valid_file(path))
+  if (invalid_file(path))
   {
     return (void *) 0;
   }
