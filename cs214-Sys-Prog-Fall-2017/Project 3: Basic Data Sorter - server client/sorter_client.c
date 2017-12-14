@@ -7,100 +7,99 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <unistd.h>
-#include <stddef.h>
-#include <ctype.h>
 #include <pthread.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-#include <signal.h>
-#include <ctype.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/sendfile.h>
 #include <fcntl.h>
 
-
 char *column;
 char *host;
 char *port;
 
-#define FILENAME "a.txt"
+int valid_file(const char *path)
+{
+
+  int fp = fopen(path, "r");
+
+  if ((read = getline(&line, &len, fp)) != -1)
+  {
+    fclose(fp);
+    if (strcmp(line, "color,director_name,num_critic_for_reviews,duration,director_facebook_likes,actor_3_facebook_likes,actor_2_name,actor_1_facebook_likes,gross,genres,actor_1_name,movie_title,num_voted_users,cast_total_facebook_likes,actor_3_name,facenumber_in_poster,plot_keywords,movie_imdb_link,num_user_for_reviews,language,country,content_rating,budget,title_year,actor_2_facebook_likes,imdb_score,aspect_ratio,movie_facebook_likes\n") != 0)
+    {
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+
+}
 
 void *send_file(void *var_path)
 {
 
   const char *path = (const char *) var_path;
 
+  if (!valid_file(path))
+  {
+    return (void *) 0;
+  }
+
   int sock;
-  ssize_t len;
-  struct sockaddr_in remote_addr;
+  struct sockaddr_in server_address;
   char buffer[BUFSIZ];
   char action[BUFSIZ];
-  // int res_size;
-  int file_size;
-  // FILE *received_file;
   int fd;
   struct stat file_stat;
-  int remain_data = 0;
-  off_t offset;
 
-  /* Zeroing remote_addr struct */
-  memset(&remote_addr, 0, sizeof(remote_addr));
+  memset(&server_address, 0, sizeof(server_address));
 
-  /* Construct remote_addr struct */
-  remote_addr.sin_family = AF_INET;
-  inet_pton(AF_INET, host, &(remote_addr.sin_addr));
-  remote_addr.sin_port = htons(atoi(port));
+  server_address.sin_family = AF_INET;
+  inet_pton(AF_INET, host, &(server_address.sin_addr));
+  server_address.sin_port = htons(atoi(port));
 
   fd = open(path, O_RDONLY);
   if (fd == -1)
   {
-          fprintf(stderr, "Error opening file --> %s", strerror(errno));
-          exit(EXIT_FAILURE);
+    fprintf(stderr, "Error opening file: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
   }
 
-  /* Get file stats */
   if (fstat(fd, &file_stat) < 0)
   {
-          fprintf(stderr, "Error fstat --> %s", strerror(errno));
-          exit(EXIT_FAILURE);
+      fprintf(stderr, "Error getting file stats: %s\n", strerror(errno));
+      exit(EXIT_FAILURE);
   }
 
   memset(action, 0, sizeof(action));
   sprintf(action, "%s %zd", column, file_stat.st_size);
 
-  /* Create client socket */
   sock = socket(AF_INET, SOCK_STREAM, 0);
+
   if (sock == -1)
   {
-          fprintf(stderr, "Error creating socket --> %s\n", strerror(errno));
-
-          exit(EXIT_FAILURE);
+    fprintf(stderr, "Error creating socket: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
   }
 
-  /* Connect to the server */
-  if (connect(sock, (struct sockaddr *)&remote_addr, sizeof(struct sockaddr)) == -1)
+  if (connect(sock, (struct sockaddr *)&server_address, sizeof(struct sockaddr)) == -1)
   {
-          fprintf(stderr, "Error on connect --> %s\n", strerror(errno));
+          fprintf(stderr, "Error connecting: %s\n", strerror(errno));
 
           exit(EXIT_FAILURE);
   }
-
-  // fprintf(stdout, "%zd\n", file_stat.st_size);
-
-  //
-  /* Sending file size */
-  // len = send(client_socket, file_stat.st_size, sizeof(file_stat.st_size), 0);
 
   if (send(sock, action, sizeof(action), 0) < 0)
   {
-    fprintf(stderr, "%s", strerror(errno));
+    fprintf(stderr, "Error sending action: %s\n", strerror(errno));
     exit(EXIT_FAILURE);
   }
 
@@ -116,101 +115,26 @@ void *send_file(void *var_path)
     }
     else if (rd == -1)
     {
-      fprintf(stderr, "Unable to read file: %s", strerror(errno));
+      fprintf(stderr, "Unable to read file: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
 
     if(write(sock, buffer, rd) == -1)
     {
-      fprintf(stderr, "Unable to write to socket: %s", strerror(errno));
+      fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
     }
 
   }
 
-  // int sent;
-  // int remaining = file_stat.st_size;
-  //
-  // printf("%s\n\n", path);
+  char response[BUFSIZ];
+  recv(sock, response, sizeof(response), 0);
 
-  // while (((sent = sendfile(sock, fd, &offset, BUFSIZ)) > 0) && (remaining > 0))
-  // {
-  //   printf("okko");
-  //   fprintf(stdout, "1. Serversent sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
-  //   remaining -= sent;
-  //   fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
-  // }
-
-  // if (send(sock, " ", 1, 0) < 0)
-  // {
-  //   fprintf(stderr, "%s", strerror(errno));
-  //   exit(EXIT_FAILURE);
-  // }
-  //
-  // if (send(sock, column, strlen(column), 0) < 0)
-  // {
-  //   fprintf(stderr, "%s", strerror(errno));
-  //   exit(EXIT_FAILURE);
-  // }
-  //
-  // if (send(sock, " ", 1, 0) < 0)
-  // {
-  //   fprintf(stderr, "%s", strerror(errno));
-  //   exit(EXIT_FAILURE);
-  // }
-  //
-  // if (send(sock, path, strlen(path), 0) < 0)
-  // {
-  //   fprintf(stderr, "%s", strerror(errno));
-  //   exit(EXIT_FAILURE);
-  // }
-  //
-  // int remaining = file_stat.st_size;
-  // /* Sending file data */
-  //
-  // int sent;
-  //
-  // while (((sent = sendfile(socket, fd, &offset, BUFSIZ)) > 0) && (remaining > 0))
-  // {
-  //   fprintf(stdout, "1. Serversent sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
-  //   remaining -= sent;
-  //   fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent, offset, remaining);
-  // }
-
-  // fprintf(stdout, "Server sent %zd bytes for the size\n", len);
-  //
-  // offset = 0;
-  // remain_data = file_stat.st_size;
-  // /* Sending file data */
-  // while (((sent_bytes = sendfile(server_socket, fd, &offset, BUFSIZ)) > 0) && (remain_data > 0))
-  // {
-  //         fprintf(stdout, "1. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent_bytes, offset, remain_data);
-  //         remain_data -= sent_bytes;
-  //         fprintf(stdout, "2. Server sent %d bytes from file's data, offset is now : %zd and remaining data = %d\n", sent_bytes, offset, remain_data);
-  // }
-
-  /* Receiving file size */
-  // recv(client_socket, buffer, BUFSIZ, 0);
-  // file_size = atoi(buffer);
-  // //fprintf(stdout, "\nFile size : %d\n", file_size);
-  //
-  // received_file = fopen(FILENAME, "w");
-  // if (received_file == NULL)
-  // {
-  //         fprintf(stderr, "Failed to open file foo --> %s\n", strerror(errno));
-  //
-  //         exit(EXIT_FAILURE);
-  // }
-  //
-  // remain_data = file_size;
-  //
-  // while (((len = recv(client_socket, buffer, BUFSIZ, 0)) > 0) && (remain_data > 0))
-  // {
-  //         fwrite(buffer, sizeof(char), len, received_file);
-  //         remain_data -= len;
-  //         fprintf(stdout, "Receive %zd bytes and we hope :- %d bytes\n", len, remain_data);
-  // }
-  // fclose(received_file);
+  if (strcmp(response, "sorted") != 0)
+  {
+    printf("Server could not sort. \n");
+    exit(EXIT_FAILURE);
+  }
 
   close(sock);
   close(fd);
