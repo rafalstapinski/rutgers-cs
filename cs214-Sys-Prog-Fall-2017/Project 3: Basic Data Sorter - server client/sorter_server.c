@@ -339,12 +339,6 @@ void *handle_connection(void *args)
   char action[BUFSIZ];
   int sock = worker->socket;
 
-  printf("Thread: %ld\n", pthread_self());
-  printf("Socket: %d\n", sock);
-
-  char *file_length_str;
-  long long file_length;
-
   struct stat file_stat;
 
   while (recv(sock, action, sizeof(action), 0))
@@ -356,7 +350,7 @@ void *handle_connection(void *args)
       write_list();
 
 
-      fd = open("/tmp/raf-sorted", O_RDONLY);
+      int fd = open("/tmp/raf-sorted", O_RDONLY);
       if (fd == -1)
       {
 
@@ -373,50 +367,54 @@ void *handle_connection(void *args)
 
       }
 
-      file_length = file_stat.st_size
-      sprintf(file_length_str, "%zd", file_length);
+      char file_length_str[10];
+      sprintf(file_length_str, "%zd", file_stat.st_size);
 
-      if (send(sock, action, sizeof(action), 0) < 0)
+      if (send(sock, file_length_str, sizeof(file_length_str), 0) < 0)
       {
 
-        fprintf(stderr, "Error sending action: %s\n", strerror(errno));
+        fprintf(stderr, "Error sending file length: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
 
       }
 
-      // int rd;
-      //
-      // while (1)
-      // {
-      //   rd = read(fd, buffer, BUFSIZ);
-      //
-      //   if (rd == 0)
-      //   {
-      //     break;
-      //   }
-      //   else if (rd == -1)
-      //   {
-      //
-      //     fprintf(stderr, "Unable to read file: %s\n", strerror(errno));
-      //     exit(EXIT_FAILURE);
-      //
-      //   }
-      //
-      //   if(write(sock, buffer, rd) == -1)
-      //   {
-      //
-      //     fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
-      //     exit(EXIT_FAILURE);
-      //
-      //   }
-      //
-      // }
+      int rd;
 
+      while (1)
+      {
+        rd = read(fd, buffer, BUFSIZ);
+
+        if (rd == 0)
+        {
+          break;
+        }
+        else if (rd == -1)
+        {
+
+          fprintf(stderr, "Unable to read file: %s\n", strerror(errno));
+          exit(EXIT_FAILURE);
+
+        }
+
+        if (write(sock, buffer, sizeof(buffer)) == -1)
+        {
+
+          fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
+          exit(EXIT_FAILURE);
+
+        }
+      }
+
+      close(fd);
+      close(sock);
       return (void *) 0;
 
     }
     else
     {
+
+      char *file_length_str;
+      long long file_length;
 
       for (file_length_str = action; file_length_str != '\0'; file_length_str++)
       {
@@ -476,7 +474,7 @@ void *handle_connection(void *args)
         }
       }
 
-      printf("\n\n");
+      // printf("\n\n");
 
       close(fd);
 
@@ -544,13 +542,18 @@ int main(int argc, char *argv[])
 
   char ip[INET_ADDRSTRLEN];
 
+  printf("Received connections from: ");
+  fflush(stdout);
+
   while ((client_socket = accept(server_socket, (struct sockaddr *) &client_address, &sock_len)) != -1)
   {
 
-    // inet_ntop(AF_INET, &client_address, ip, INET_ADDRSTRLEN);
-    // printf("%s,", ip);
+    inet_ntop(AF_INET, &client_address, ip, INET_ADDRSTRLEN);
 
     pthread_t handle_thread;
+
+    printf("%s,", ip);
+    fflush(stdout);
 
     worker = malloc(sizeof(struct worker_args));
     worker->socket = client_socket;

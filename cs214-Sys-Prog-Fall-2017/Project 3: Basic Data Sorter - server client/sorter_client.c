@@ -18,6 +18,8 @@
 #include <netdb.h>
 #include <sys/sendfile.h>
 #include <fcntl.h>
+#include "sorter_client.h"
+
 
 char *column;
 char *host;
@@ -137,7 +139,7 @@ void *send_file(void *var_path)
 
     }
 
-    if(write(sock, buffer, rd) == -1)
+    if (write(sock, buffer, rd) == -1)
     {
 
       fprintf(stderr, "Unable to write to socket: %s\n", strerror(errno));
@@ -165,7 +167,7 @@ void *send_file(void *var_path)
 
 }
 
-void get_result(const char *output_dir)
+void get_result(const char *output_dir, const char *column)
 {
 
   int sock;
@@ -173,7 +175,6 @@ void get_result(const char *output_dir)
   char buffer[BUFSIZ];
   char action[] = "get me all of the files!";
   int fd;
-  struct stat file_stat;
 
   memset(&server_address, 0, sizeof(server_address));
 
@@ -181,6 +182,9 @@ void get_result(const char *output_dir)
   inet_pton(AF_INET, host, &(server_address.sin_addr));
   server_address.sin_port = htons(atoi(port));
 
+  char filename[200];
+
+  sprintf(filename, "%s/AllFiles-sorted-%s.csv", output_dir, column);
 
   sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -208,7 +212,51 @@ void get_result(const char *output_dir)
 
   }
 
-  while (recv(sock, buffer, BUFSIZ, 0))
+  char file_length_str[BUFSIZ];
+  recv(sock, file_length_str, BUFSIZ, 0);
+
+  long long file_length = strtoll(file_length_str, NULL, 10);
+
+  fd = open(filename, O_WRONLY | O_TRUNC | O_CREAT, S_IWUSR | S_IRUSR);
+  if (fd == -1)
+  {
+    fprintf(stderr, "Unable to create result file: %s\n", strerror(errno));
+    exit(EXIT_FAILURE);
+  }
+
+  ssize_t rd;
+  for (; file_length > 0; file_length -= rd)
+  {
+
+    rd = BUFSIZ;
+
+    if (rd > file_length)
+    {
+      rd = file_length;
+    }
+
+    rd = read(sock, buffer, rd);
+
+    if (rd == -1)
+    {
+      fprintf(stderr, "Unable to read file: %s", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+    else if (rd == 0)
+    {
+      break;
+    }
+
+
+    if (write(fd, buffer, rd) == -1)
+    {
+      fprintf(stderr, "Unable to write to file: %s", strerror(errno));
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  close(fd);
+  // printf("%s\n\n", file_length_str);
 
 }
 
@@ -379,8 +427,9 @@ int main(int argc, char *argv[])
   get_result(output_dir, column);
 
 
-  // free(column);
-  // free(src_dir);
+  free(column);
+  free(input_dir);
+  free(output_dir);
 
 
   return 0;
