@@ -2,7 +2,7 @@
   "uploadOnSave": true,
   "useAtomicWrites": false,
   "deleteLocal": false,
-  "hostname": "flyweight.cs.rutgers.edu",
+  "hostname": "visitor.cs.rutgers.edu",
   "target": "/ilab/users/rjs397/rutgers-cs/",
   "ignore": [
     ".remote-sync.json",
