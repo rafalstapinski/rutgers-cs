@@ -2,15 +2,14 @@
   "uploadOnSave": true,
   "useAtomicWrites": false,
   "deleteLocal": false,
-  "hostname": "visitor.cs.rutgers.edu",
+  "hostname": "builder.cs.rutgers.edu",
   "target": "/ilab/users/rjs397/rutgers-cs/",
   "ignore": [
     ".remote-sync.json",
-    ".git/**",
-    "cs211-Comp-Arch-Fall-2017/**"
+    ".git/**"
   ],
   "username": "rjs397",
   "password": "charleS57z34_S$",
   "watch": [],
-  "transport": "scp"
+  "transport": "sftp"
 }

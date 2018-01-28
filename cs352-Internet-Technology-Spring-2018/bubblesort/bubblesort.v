@@ -14,29 +14,32 @@ module bubblesort() ;
    reg signed [31:0] temp;         // temp for swapping the data
    reg 		     swapped;      // Flag if we have made any swaps
 
-                     // clock variables
+					 // clock variables
    reg 		     clock;   // drive the simulation
    reg 		     signed [31:0] cycle_count;
 
+   reg signed [31:0] j;
+   reg signed [31:0] tmp;
+
    // This example task prints the data array to be sorted
    task print_data;
-      reg signed [31:0] i;            // loop counter has local scope
-      begin
+	  reg signed [31:0] i;            // loop counter has local scope
+	  begin
 	 for (i = 0; i < 8; i = i + 1) begin
-	    $display("cycle: %4d data[%0d] = %4d", cycle_count, i, data[i]);
+		$display("cycle: %4d data[%0d] = %4d", cycle_count, i, data[i]);
 	 end
-      end
+	  end
    endtask
 
    // Initialization section. This is run before the simulation starts.
-   initial begin
-      clock = 0;          // Key point: the clock drives the program
-      cycle_count = 0;    // the cycle counter keep track of how far along execution is
-      swapped = 0;        // flag for if the any swaps in the bubble sort have been done
+initial begin
+	  clock = 0;          // Key point: the clock drives the program
+	  cycle_count = 0;    // the cycle counter keep track of how far along execution is
+	  swapped = 0;        // flag for if the any swaps in the bubble sort have been done
 
-      // This is the data array to be sorted
-      data[0] = 0;  data[1] = 1010;  data[2] = 2020; data[3] = 3030;
-      data[4] = 40;  data[5] = 50;  data[6] = 60; data[7] = 70;
+	  // This is the data array to be sorted
+	  data[0] = 0;  data[1] = 1010;  data[2] = 2020; data[3] = 3030;
+	  data[4] = 40;  data[5] = 50;  data[6] = 60; data[7] = 70;
    end
 
    // This is the main thread to swap the elements
@@ -45,15 +48,37 @@ module bubblesort() ;
    // The code below is run on the postive rising edge of the clock
 
    always @(posedge clock) begin // at every positive rising edge (going from 0 to 1) of the clock
-      $display("iteration %d",cycle_count);  // this is a print statement in verilog
-      // recall the bubble sort loops through the array swapping elements
-      // until there are no more swaps.
-      swapped = 0;  // set the flag to zero
-      print_data;   // call the task that prints the current state of the array
+	  $display("iteration %d",cycle_count);  // this is a print statement in verilog
+	  // recall the bubble sort loops through the array swapping elements
+	  // until there are no more swaps.
+	  swapped = 0;  // set the flag to zero
+	  print_data;   // call the task that prints the current state of the array
 
-      // Overall Verilog tutorial can be found here:
-      // For looping can be found here: http://www.asic-world.com/verilog/vbehave3.html
-      // Your code goes here ...
+
+	  // Overall Verilog tutorial can be found here:
+	  // For looping can be found here: http://www.asic-world.com/verilog/vbehave3.html
+	  // Your code goes here ...
+
+      for (j = 0; j < 7; j = j + 1) begin
+
+        if (data[j] > data[j + 1]) begin
+
+            tmp = data[j];
+            data[j] = data[j + 1];
+            data[j + 1] = tmp;
+            swapped = 1;
+
+        end
+
+      end
+
+      if (swapped == 0) begin
+
+        $finish;
+
+      end
+
+
 
    end
 
@@ -61,22 +86,22 @@ module bubblesort() ;
    // This code uses delayed assignment
    // The value of cycle_count is not updated until the next clock tick
    always @(posedge clock) begin
-         cycle_count <= cycle_count + 1;
+		 cycle_count <= cycle_count + 1;
    end
 
    // keep the simulation from an infinite loop
    always @(posedge clock) begin
-      if (cycle_count > `MAX_CYCLES) begin
+	  if (cycle_count > `MAX_CYCLES) begin
 	 $display("Maximum cycles %d reached ", cycle_count);
 	 $finish;
-      end
+	  end
    end
 
    // The clock generator as an always block with no sensitivity list
    // After a delay of 1 time unit, set the clock to a 0 or 1 depending on the previous
    // value
    always begin
-      #1 clock = !clock ;
+	  #1 clock = !clock ;
    end
 
 endmodule
