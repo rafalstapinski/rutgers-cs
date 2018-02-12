@@ -3,19 +3,19 @@ import socket as ip
 class socket:
 
     def __init__(self):
-        pass
+        self.sock = ip.socket(ip.AF_INET, ip.SOCK_DGRAM)
 
     def socket(self):
-        pass
+        return self.sock
 
     def bind(self, address):
-        pass
+        self.sock.bind(address)
 
-    def sendto(self, buffer, address):
-        pass
+    def sendto(self, buff, address):
+        self.sock.sendto(buff, address)
 
     def recvfrom(self, nbytes):
-        pass
+        return self.sock.recvfrom(nbytes)
 
     def close(self):
-        pass
+        self.sock.close()
