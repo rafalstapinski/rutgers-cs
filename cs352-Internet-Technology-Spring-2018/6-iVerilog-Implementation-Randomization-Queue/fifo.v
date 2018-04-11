@@ -26,11 +26,14 @@ reg[`BUF_WIDTH :0]    fifo_counter;
 reg[`BUF_WIDTH -1:0]  rd_ptr, wr_ptr;           // pointer to read and write addresses
 reg[7:0]              buf_mem[`BUF_SIZE -1 : 0]; //
 
-always @(fifo_counter)
-begin
+reg[31:0]             seed;
+reg[31:0]             bts;
+reg[31:0]             delay;
+
+always @(fifo_counter) begin
    empty = (fifo_counter==0);
    full = (fifo_counter== `BUF_SIZE);
-
+   delay = 10;
 end
 
 
@@ -53,44 +56,69 @@ end
 
 always @( posedge clk or posedge srst)
 begin
-   if( srst )
-      dout <= 0;
-   else
-   begin
-      if( rd_en && !empty )
-         dout <= buf_mem[rd_ptr];
 
-      else
-         dout <= dout;
+  if( srst ) begin
 
-   end
+    dout <= 0;
+
+  end else begin
+
+
+    if (rd_en && !empty) begin
+
+      dout <= buf_mem[rd_ptr];
+
+    end else begin
+
+      dout <= dout;
+
+    end
+
+  end
 end
 
-always @(posedge clk)
-begin
+always @(posedge clk) begin
 
-   if( wr_en && !full )
-      buf_mem[ wr_ptr ] <= din;
+  if( wr_en && !full ) begin
 
-   else
-      buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
+    buf_mem[ wr_ptr ] <= din;
+
+  end else begin
+
+    buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
+
+  end
 end
 
-always@(posedge clk or posedge srst)
-begin
-   if( srst )
-   begin
+always @(posedge clk or posedge srst) begin
+
+   if( srst ) begin
+
       wr_ptr <= 0;
       rd_ptr <= 0;
-   end
-   else
-   begin
-      if( !full && wr_en )    wr_ptr <= wr_ptr + 1;
-          else  wr_ptr <= wr_ptr;
 
-      if( !empty && rd_en )   rd_ptr <= rd_ptr + 1;
-      else rd_ptr <= rd_ptr;
-   end
+   end else begin
 
+      if (!full && wr_en ) begin
+
+        wr_ptr <= wr_ptr + 1;
+
+      end else begin
+
+        wr_ptr <= wr_ptr;
+
+      end
+
+      if (!empty && rd_en ) begin
+
+        rd_ptr <= rd_ptr + 1;
+
+      end else begin
+
+        rd_ptr <= rd_ptr;
+
+      end
+   end
 end
+
 endmodule // fifo
