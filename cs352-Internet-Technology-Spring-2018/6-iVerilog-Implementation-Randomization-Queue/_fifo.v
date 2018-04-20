@@ -26,26 +26,12 @@ reg[`BUF_WIDTH :0]    fifo_counter;
 reg[`BUF_WIDTH -1:0]  rd_ptr, wr_ptr;           // pointer to read and write addresses
 reg[7:0]              buf_mem[`BUF_SIZE -1 : 0]; //
 
-reg[31:0]             seed = 3023859;
-reg[31:0]             bts = 1043837;
-reg[31:0]             delay = 0;
+reg[7:0]              delay = 90;
 
-always @(fifo_counter) begin
+always @(fifo_counter)
+begin
    empty = (fifo_counter==0);
    full = (fifo_counter== `BUF_SIZE);
-end
-
-always @(delay) begin
-
-  if (delay == 0) begin
-
-    delay = 0;
-
-  end else begin
-
-    delay = delay - 1;
-
-  end
 
 end
 
@@ -67,81 +53,50 @@ begin
 
 end
 
-// popping from q
-always @( posedge clk or posedge srst) begin
-
-  if( srst ) begin
-
-    dout <= 0;
-
-  end else begin
-
-    if (rd_en && !empty && delay == 0) begin
-
-      bts = bts ^ seed;
-      seed = seed << 1;
-      seed = seed + 1;
-
-      delay = bts & 31;
-
-      dout <= buf_mem[rd_ptr];
-
-    end else begin
-
-      delay = delay;
-
-      dout <= dout;
-
-    end
-
-  end
-end
-
-
-// pushing to q
-always @(posedge clk) begin
-
-  if( wr_en && !full) begin
-
-    buf_mem[ wr_ptr ] <= din;
-    wr_ptr = wr_ptr + 1;
-
-  end else begin
-
-    buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
-
-  end
-end
-
-always @(posedge clk or posedge srst) begin
-
-   if( srst ) begin
-
-      wr_ptr <= 0;
-      rd_ptr <= 0;
-
-   end else begin
-
-      if (!full && wr_en ) begin
-
-        wr_ptr <= wr_ptr + 1;
-
-      end else begin
-
-        wr_ptr <= wr_ptr;
-
-      end
-
-      if (!empty && rd_en ) begin
-
-        rd_ptr <= rd_ptr + 1;
-
-      end else begin
-
-        rd_ptr <= rd_ptr;
-
-      end
+always @( posedge clk or posedge srst)
+begin
+   if( srst )
+      dout <= 0;
+   else
+   begin
+      if( rd_en && !empty )
+        dout <= buf_mem[rd_ptr];
+      else
+         dout <= dout;
    end
 end
 
+always @(posedge clk)
+begin
+
+   if( wr_en && !full )
+    buf_mem[ wr_ptr ] <= din;
+
+   else
+      buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
+end
+
+always@(posedge clk or posedge srst)
+begin
+   if( srst )
+   begin
+      wr_ptr <= 0;
+      rd_ptr <= 0;
+   end
+   else
+   begin
+      if( !full && wr_en )
+
+        wr_ptr <= wr_ptr + 1;
+
+      else
+        wr_ptr <= wr_ptr;
+
+      if( !empty && rd_en )
+        rd_ptr <= rd_ptr + 1;
+      else
+        rd_ptr <= rd_ptr;
+   end
+
+end
 endmodule // fifo

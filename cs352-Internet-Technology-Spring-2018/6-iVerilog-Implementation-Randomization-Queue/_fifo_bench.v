@@ -11,7 +11,7 @@
 // This code is modified from: http://electrosofts.com/verilog/fifo.html
 
 `define BUF_WIDTH 8
-`define MAX_CYCLES 500
+`define MAX_CYCLES 10000
 
 module fifo_test();
 reg clk, rst, wr_en, rd_en ;
@@ -83,58 +83,56 @@ begin
    #15 rst = 0;
 
         push(1);
-        fork
-           push(2);
-           pop(tempdata);
-        join              //push and pop together
-        push(10);
-        push(20);
-        push(30);
-        push(40);
-        push(50);
-        push(60);
-        push(70);
-        push(80);
-        push(90);
-        push(100);
-        push(110);
-        push(120);
-        push(8'hFF);
-        push(8'hFF);
-   // Push a UDP packet
-        push(packet_len);
-        for (i = 0; i< packet_len; i++) begin
-            push (udp_packet[i]);
-        end
-
-        pop(tempdata);
-        push(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        push(140);
-        pop(tempdata);
-        push(tempdata);//
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
+        // fork
+        //    push(2);
+        //    pop(tempdata);
+        // join              //push and pop together
+        push(2);
+        push(3);
+        push(4);
         push(5);
-        pop(tempdata);
-
-        // for (i = 0; i < 50; i++) begin
-        //
-        //   pop(tempdata);
-        //
+        // push(30);
+        // push(40);
+        // push(50);
+        // push(60);
+        // push(70);
+        // push(80);
+        // push(90);
+        // push(100);
+        // push(110);
+        // push(120);
+        // push(8'hFF);
+        // push(8'hFF);
+   // Push a UDP packet
+        // push(packet_len);
+        // for (i = 0; i< packet_len; i++) begin
+        //     push (udp_packet[i]);
         // end
+
+        // pop(tempdata);
+        // push(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // push(140);
+        // pop(tempdata);
+        // push(tempdata);//
+        pop(tempdata);
+        pop(tempdata);
+        pop(tempdata);
+        pop(tempdata);
+        pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // push(5);
+        // pop(tempdata);
 end
 
 always begin
@@ -181,6 +179,7 @@ output [7:0] data;
           #1 rd_en = 0;
           data = buf_out;
            $display("-------------------------------Poped ", data);
+           #1 $display("--------- clock", cycle_counter);
 
         end
 endtask
