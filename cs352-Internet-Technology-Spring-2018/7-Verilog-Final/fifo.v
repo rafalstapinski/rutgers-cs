@@ -31,9 +31,6 @@ reg[1:0]              shifted = 0;
 reg[7:0]              delay = 2;
 reg[7:0]              delay_cap = 7;
 
-reg[7:0]              bucket_size = 32;
-reg[7:0]              token_count = 0;
-
 reg[7:0]              packet_size = 2;
 reg[7:0]              packet_counter = 2;
 reg[7:0]              multiplier = 1;

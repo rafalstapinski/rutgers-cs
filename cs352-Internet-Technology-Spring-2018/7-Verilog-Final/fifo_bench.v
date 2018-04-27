@@ -20,13 +20,6 @@ reg[7:0] tempdata;
 wire [7:0] buf_out;
 reg [31:0] cycle_counter;   // counter
 
-reg[31:0]             seed = 563412;
-reg[7:0]              delay = 0;
-
-reg[7:0]              cap = 10;
-
-reg[31:0]             lfsr = 987654321;
-
 reg [7:0] udp_packet [0:2047]; // example byte array. This is a 1-Dimensional array of 8-bit bytes
 reg [7:0] 	packet_len ; // length of the packet
 reg [31:0] 	i;          // 32 bit loop counter
