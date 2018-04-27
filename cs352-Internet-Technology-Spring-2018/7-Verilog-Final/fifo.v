@@ -31,6 +31,9 @@ reg[1:0]              shifted = 0;
 reg[7:0]              delay = 2;
 reg[7:0]              delay_cap = 7;
 
+reg[7:0]              bucket_size = 32;
+reg[7:0]              token_count = 0;
+
 
 always @(fifo_counter) begin
 
@@ -67,10 +70,13 @@ always @(posedge clk or posedge srst) begin
 end
 
 
-
 always @( posedge clk or posedge srst) begin
 
   if (srst) begin
+
+    lfsr <= lfsr;
+    shifted <= 0;
+    delay <= delay;
 
     dout <= 0;
 
@@ -119,7 +125,7 @@ always @( posedge clk or posedge srst) begin
     end else begin
 
       lfsr <= lfsr;
-      shifted <= shifted;  
+      shifted <= shifted;
       delay <= delay;
 
       dout <= 0;
@@ -141,7 +147,7 @@ always @(posedge clk) begin
   end
 end
 
-always@(posedge clk or posedge srst) begin
+always @(posedge clk or posedge srst) begin
 
   if( srst ) begin
 
