@@ -90,22 +90,6 @@ begin
 
    #15 rst = 0;
 
-   // $display("%b", lfsr);
-   //
-   // i = 0;
-   //
-   // while (i < 100) begin
-   //
-   //  lfsr = lfsr << 1;
-   //  lfsr[0] = lfsr[1] ^ lfsr[13] ^ lfsr[0] ^ 1;
-   //  i = i + 1;
-   //
-   //  $display(lfsr & 15);
-   //
-   //
-   // end
-
-
    push(1);
    push(2);
    push(3);
@@ -116,6 +100,14 @@ begin
    push(8);
    push(9);
    push(10);
+   push(11);
+   push(12);
+   push(13);
+   push(14);
+   push(15);
+   push(16);
+   push(17);
+   push(18);
 
    i = 0;
 

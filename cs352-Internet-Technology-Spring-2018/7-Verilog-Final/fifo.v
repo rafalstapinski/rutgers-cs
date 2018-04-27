@@ -34,11 +34,15 @@ reg[7:0]              delay_cap = 7;
 reg[7:0]              bucket_size = 32;
 reg[7:0]              token_count = 0;
 
+reg[7:0]              packet_size = 2;
+reg[7:0]              packet_counter = 2;
+reg[7:0]              multiplier = 1;
+
 
 always @(fifo_counter) begin
 
-   empty = (fifo_counter==0);
-   full = (fifo_counter== `BUF_SIZE);
+   empty = (fifo_counter == 0);
+   full = (fifo_counter == `BUF_SIZE);
 
 end
 
@@ -70,9 +74,11 @@ always @(posedge clk or posedge srst) begin
 end
 
 
-always @( posedge clk or posedge srst) begin
+always @(posedge clk or posedge srst) begin
 
   if (srst) begin
+
+    packet_size <= packet_size;
 
     lfsr <= lfsr;
     shifted <= 0;
@@ -85,6 +91,9 @@ always @( posedge clk or posedge srst) begin
     if( rd_en && !empty ) begin
 
       if (shifted == 1) begin
+
+        packet_counter <= packet_counter;
+        multiplier <= multiplier;
 
         lfsr[0] <= lfsr[1] ^ lfsr[13] ^ lfsr[0] ^ 1;
         shifted <= 0;
@@ -106,13 +115,31 @@ always @( posedge clk or posedge srst) begin
 
         lfsr <= lfsr << 1;
         shifted <= 1;
-        delay <= lfsr & delay_cap;
+
+        if (packet_counter == 0) begin
+
+          packet_counter <= packet_size;
+          multiplier <= 5;
+
+        end else begin
+
+          packet_counter <= packet_counter;
+          multiplier <= multiplier;
+
+        end
+
+        packet_counter <= packet_counter - 1;
+
+        delay <= lfsr & delay_cap * multiplier;
 
         dout <= buf_mem[rd_ptr];
 
       end else begin
 
-        $display(delay);
+        // $display(delay);
+
+        packet_counter <= packet_counter;
+        multiplier <= multiplier;
 
         lfsr[31] <= lfsr[0];
         shifted <= 0;
@@ -123,6 +150,9 @@ always @( posedge clk or posedge srst) begin
       end
 
     end else begin
+
+      packet_counter <= packet_counter;
+      multiplier <= multiplier;
 
       lfsr <= lfsr;
       shifted <= shifted;
