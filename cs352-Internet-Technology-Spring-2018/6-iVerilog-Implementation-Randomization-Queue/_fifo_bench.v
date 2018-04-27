@@ -11,7 +11,7 @@
 // This code is modified from: http://electrosofts.com/verilog/fifo.html
 
 `define BUF_WIDTH 8
-`define MAX_CYCLES 10000
+`define MAX_CYCLES 1000
 
 module fifo_test();
 reg clk, rst, wr_en, rd_en ;
@@ -19,6 +19,12 @@ reg[7:0] buf_in;
 reg[7:0] tempdata;
 wire [7:0] buf_out;
 reg [31:0] cycle_counter;   // counter
+
+reg[7:0]              seed = 654321;
+reg[7:0]              bitstring = 123456;
+reg[7:0]              delay = 0;
+
+reg[7:0]              cap = 10;
 
 reg [7:0] udp_packet [0:2047]; // example byte array. This is a 1-Dimensional array of 8-bit bytes
 reg [7:0] 	packet_len ; // length of the packet
@@ -30,6 +36,7 @@ reg [31:0] 	i;          // 32 bit loop counter
 fifo ff( .clk(clk), .srst(rst), .din(buf_in), .dout(buf_out),
          .wr_en(wr_en), .rd_en(rd_en), .empty(buf_empty),
          .full(buf_full) );
+
 
 initial
 begin
@@ -82,6 +89,8 @@ begin
 
    #15 rst = 0;
 
+   // i got it
+
         push(1);
         // fork
         //    push(2);
@@ -90,9 +99,6 @@ begin
         push(2);
         push(3);
         push(4);
-        push(5);
-        // push(30);
-        // push(40);
         // push(50);
         // push(60);
         // push(70);
@@ -109,6 +115,19 @@ begin
         //     push (udp_packet[i]);
         // end
 
+        pop(tempdata);
+        pop(tempdata);
+        pop(tempdata);
+        pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+
         // pop(tempdata);
         // push(tempdata);
         // pop(tempdata);
@@ -118,11 +137,11 @@ begin
         // push(140);
         // pop(tempdata);
         // push(tempdata);//
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
-        pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
+        // pop(tempdata);
         // pop(tempdata);
         // pop(tempdata);
         // pop(tempdata);
@@ -176,11 +195,18 @@ output [7:0] data;
      rd_en = 1;
           @(posedge clk);
 
-          #1 rd_en = 0;
-          data = buf_out;
-           $display("-------------------------------Poped ", data);
-           #1 $display("--------- clock", cycle_counter);
+          bitstring = bitstring ^ seed;
+          seed = seed << 1;
+          bitstring = seed + bitstring;
 
+          delay = bitstring % cap;
+
+          seed = seed + delay;
+
+          #1 rd_en = 0;
+          #(delay) data = buf_out;
+          // $display("-----------------Poped", data, $time);
+          $display("-----------------Poped", data, $time);
         end
 endtask
 

@@ -25,6 +25,7 @@ reg[7:0]              delay = 0;
 
 reg[7:0]              cap = 10;
 
+reg[31:0]             lfsr = 987654321;
 
 reg [7:0] udp_packet [0:2047]; // example byte array. This is a 1-Dimensional array of 8-bit bytes
 reg [7:0] 	packet_len ; // length of the packet
@@ -89,12 +90,32 @@ begin
 
    #15 rst = 0;
 
+   // $display("%b", lfsr);
+   //
+   // i = 0;
+   //
+   // while (i < 100) begin
+   //
+   //  lfsr = lfsr << 1;
+   //  lfsr[0] = lfsr[1] ^ lfsr[13] ^ lfsr[0] ^ 1;
+   //  i = i + 1;
+   //
+   //  $display(lfsr & 15);
+   //
+   //
+   // end
+
 
    push(1);
    push(2);
    push(3);
    push(4);
    push(5);
+   push(6);
+   push(7);
+   push(8);
+   push(9);
+   push(10);
 
    i = 0;
 

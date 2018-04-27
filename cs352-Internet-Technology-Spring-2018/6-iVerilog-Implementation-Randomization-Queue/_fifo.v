@@ -26,7 +26,11 @@ reg[`BUF_WIDTH :0]    fifo_counter;
 reg[`BUF_WIDTH -1:0]  rd_ptr, wr_ptr;           // pointer to read and write addresses
 reg[7:0]              buf_mem[`BUF_SIZE -1 : 0]; //
 
-reg[7:0]              delay = 90;
+reg[7:0]              seed = 654321;
+reg[7:0]              bitstring = 123456;
+reg[7:0]              delay = 0;
+
+reg[7:0]              cap = 10;
 
 always @(fifo_counter)
 begin
@@ -60,9 +64,9 @@ begin
    else
    begin
       if( rd_en && !empty )
-        dout <= buf_mem[rd_ptr];
+        dout = #0 buf_mem[rd_ptr];
       else
-         dout <= dout;
+        dout = dout;
    end
 end
 
@@ -73,7 +77,7 @@ begin
     buf_mem[ wr_ptr ] <= din;
 
    else
-      buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
+    buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
 end
 
 always@(posedge clk or posedge srst)
@@ -85,6 +89,16 @@ begin
    end
    else
    begin
+
+      bitstring = bitstring ^ seed;
+      seed = seed << 1;
+      bitstring = seed + bitstring;
+
+      delay = bitstring % cap;
+
+      seed = seed + delay;
+
+
       if( !full && wr_en )
 
         wr_ptr <= wr_ptr + 1;
@@ -93,9 +107,9 @@ begin
         wr_ptr <= wr_ptr;
 
       if( !empty && rd_en )
-        rd_ptr <= rd_ptr + 1;
+        #(delay) rd_ptr <= rd_ptr + 1;
       else
-        rd_ptr <= rd_ptr;
+        #(delay) rd_ptr <= rd_ptr;
    end
 
 end

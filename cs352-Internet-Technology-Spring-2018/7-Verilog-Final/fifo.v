@@ -26,93 +26,150 @@ reg[`BUF_WIDTH :0]    fifo_counter;
 reg[`BUF_WIDTH -1:0]  rd_ptr, wr_ptr;           // pointer to read and write addresses
 reg[7:0]              buf_mem[`BUF_SIZE -1 : 0]; //
 
-reg[31:0]             seed = 563412;
-reg[7:0]              delay = 0;
+reg[31:0]             lfsr = 987654321;
+reg[1:0]              shifted = 0;
+reg[7:0]              delay = 2;
+reg[7:0]              delay_cap = 7;
 
-always @(fifo_counter)
-begin
+
+always @(fifo_counter) begin
+
    empty = (fifo_counter==0);
    full = (fifo_counter== `BUF_SIZE);
-end
-
-
-always @(posedge clk or posedge srst)
-begin
-   if( srst )
-       fifo_counter <= 0;
-   else if( (!full && wr_en) && ( !empty && rd_en ) )
-       fifo_counter <= fifo_counter;
-
-   else if( !full && wr_en )
-       fifo_counter <= fifo_counter + 1;
-
-   else if( !empty && rd_en && delay == 0 )
-       fifo_counter <= fifo_counter - 1;
-   else
-      fifo_counter <= fifo_counter;
 
 end
 
-always @( posedge clk or posedge srst)
-begin
-   if( srst )
-      dout <= 0;
-   else
-   begin
-      if( rd_en && !empty ) begin
 
-          if (delay == 0) begin
+always @(posedge clk or posedge srst) begin
 
-            dout <= buf_mem[rd_ptr];
+  if (srst) begin
 
-            delay = seed ^ delay;
-            seed = seed + delay;
+    fifo_counter <= 0;
 
-          end else begin
+  end else if( (!full && wr_en) && ( !empty && rd_en ) ) begin
 
-            // $display(delay);
-            delay = delay - 1;
-            dout <= 0;
+    fifo_counter <= fifo_counter;
 
-          end
+  end else if( !full && wr_en ) begin
+
+    fifo_counter <= fifo_counter + 1;
+
+  // add delay == 0, so that we count the pop only on the action
+  end else if( !empty && rd_en && delay == 0 ) begin
+
+    fifo_counter <= fifo_counter - 1;
+
+  end else begin
+
+    fifo_counter <= fifo_counter;
+
+  end
+end
+
+
+
+always @( posedge clk or posedge srst) begin
+
+  if (srst) begin
+
+    dout <= 0;
+
+  end else begin
+
+    if( rd_en && !empty ) begin
+
+      if (shifted == 1) begin
+
+        lfsr[0] <= lfsr[1] ^ lfsr[13] ^ lfsr[0] ^ 1;
+        shifted <= 0;
+        delay <= delay;
+
+        dout <= dout;
 
       end else begin
-        // delay <= delay + 1;
-         dout <= 0;
-        end
-   end
-end
 
-always @(posedge clk)
-begin
+        lfsr <= lfsr;
+        shifted <= shifted;
+        delay <= delay;
 
-   if( wr_en && !full )
-      buf_mem[ wr_ptr ] <= din;
+        dout <= dout;
 
-   else
-      buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
-end
-
-always@(posedge clk or posedge srst)
-begin
-   if( srst )
-   begin
-      wr_ptr <= 0;
-      rd_ptr <= 0;
-   end
-   else
-   begin
-      if( !full && wr_en )    wr_ptr <= wr_ptr + 1;
-          else  wr_ptr <= wr_ptr;
-
-      if( !empty && rd_en && delay == 0 )   begin
-
-        rd_ptr <= rd_ptr + 1;
-
-      end else begin
-        rd_ptr <= rd_ptr;
       end
-   end
 
+      if (delay == 0) begin
+
+        lfsr <= lfsr << 1;
+        shifted <= 1;
+        delay <= lfsr & delay_cap;
+
+        dout <= buf_mem[rd_ptr];
+
+      end else begin
+
+        $display(delay);
+
+        lfsr[31] <= lfsr[0];
+        shifted <= 0;
+        delay <= delay - 1;
+
+        dout <= 0;
+
+      end
+
+    end else begin
+
+      lfsr <= lfsr;
+      shifted <= shifted;  
+      delay <= delay;
+
+      dout <= 0;
+
+    end
+  end
 end
-endmodule // fifo
+
+always @(posedge clk) begin
+
+  if( wr_en && !full ) begin
+
+    buf_mem[ wr_ptr ] <= din;
+
+  end else begin
+
+    buf_mem[ wr_ptr ] <= buf_mem[ wr_ptr ];
+
+  end
+end
+
+always@(posedge clk or posedge srst) begin
+
+  if( srst ) begin
+
+    wr_ptr <= 0;
+    rd_ptr <= 0;
+
+   end else begin
+
+    if( !full && wr_en ) begin
+
+      wr_ptr <= wr_ptr + 1;
+
+    end else begin
+
+      wr_ptr <= wr_ptr;
+
+    end
+    // add delay == 0, so that we move the ptr only on the action
+    if( !empty && rd_en && delay == 0 ) begin
+
+      rd_ptr <= rd_ptr + 1;
+
+    end else begin
+
+      rd_ptr <= rd_ptr;
+
+    end
+  end
+end
+
+endmodule

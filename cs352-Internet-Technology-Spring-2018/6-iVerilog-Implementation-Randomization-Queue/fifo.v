@@ -35,19 +35,19 @@ always @(fifo_counter) begin
    full = (fifo_counter== `BUF_SIZE);
 end
 
-always @(delay) begin
-
-  if (delay == 0) begin
-
-    delay = 0;
-
-  end else begin
-
-    delay = delay - 1;
-
-  end
-
-end
+// always @(delay) begin
+//
+//   if (delay == 0) begin
+//
+//     delay = 0;
+//
+//   end else begin
+//
+//     delay = delay - 1;
+//
+//   end
+//
+// end
 
 
 always @(posedge clk or posedge srst)
@@ -76,19 +76,19 @@ always @( posedge clk or posedge srst) begin
 
   end else begin
 
-    if (rd_en && !empty && delay == 0) begin
+    if (rd_en && !empty) begin
 
-      bts = bts ^ seed;
-      seed = seed << 1;
-      seed = seed + 1;
-
-      delay = bts & 31;
+      // bts = bts ^ seed;
+      // seed = seed << 1;
+      // seed = seed + 1;
+      //
+      // delay = bts & 31;
 
       dout <= buf_mem[rd_ptr];
 
     end else begin
 
-      delay = delay;
+      // delay = delay;
 
       dout <= dout;
 
