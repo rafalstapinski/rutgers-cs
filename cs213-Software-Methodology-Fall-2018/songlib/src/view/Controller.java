@@ -1,3 +1,7 @@
+/*
+ * Authors: Rafal Stapinski & Michael Tai
+ * */
+
 package view;
 
 import javafx.beans.value.ChangeListener;
@@ -116,7 +120,7 @@ public class Controller {
 		
 	}
 	
-	public void deleteSong(ActionEvent a) {
+	public void deleteSong(ActionEvent a) throws IOException {
 		
 		this.songs.remove(this.selectedSongIndex);
 		this.refreshSongs();
@@ -139,9 +143,10 @@ public class Controller {
 			this.save_song.setDisable(true);
 			this.delete_song.setDisable(true);
 		}
+		this.saveSongs();
 	}
 	
-	public void saveSong(ActionEvent a) {
+	public void saveSong(ActionEvent a) throws IOException {
 		
 		this.warning_text.setText("");
 				
@@ -175,6 +180,7 @@ public class Controller {
 		this.song_list.getSelectionModel().select(this.selectedSongIndex);
 		this.displaySongInfo();
 		this.creatingSong = false;
+		this.saveSongs();
 		
 	}
 

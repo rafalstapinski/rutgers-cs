@@ -1,3 +1,7 @@
+/*
+ * Authors: Rafal Stapinski & Michael Tai
+ * */
+
 package view;
 
 public class Song implements Comparable<Song> {

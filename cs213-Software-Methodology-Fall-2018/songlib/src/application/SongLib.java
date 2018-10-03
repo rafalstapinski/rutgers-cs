@@ -1,3 +1,7 @@
+/*
+ * Authors: Rafal Stapinski & Michael Tai
+ * */
+
 package application;
 
 import java.io.BufferedReader;
