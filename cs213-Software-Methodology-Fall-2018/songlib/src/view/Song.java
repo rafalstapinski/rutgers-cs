@@ -14,13 +14,25 @@ public class Song implements Comparable<Song> {
 		this.album = album;
 		this.year = year;
 	}
+	
+	public Song() {
+		this.title = "";
+		this.artist = "";
+		this.album = "";
+		this.year = "";
+	}
 
 	@Override
 	public int compareTo(Song o) {
-		if (this.title.equals(o.title)) {
-			return this.artist.compareTo(o.artist);
+		if (this.title.toLowerCase().equals(o.title.toLowerCase())) {
+			return this.artist.toLowerCase().compareTo(o.artist.toLowerCase());
 		}
-		return this.title.compareTo(o.title);
+		return this.title.toLowerCase().compareTo(o.title.toLowerCase());
+	}
+	
+	@Override
+	public String toString() {
+		return this.title + " " + this.artist;
 	}
 
 }
