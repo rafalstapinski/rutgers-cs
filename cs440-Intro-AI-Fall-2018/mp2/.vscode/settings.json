@@ -1,0 +1,14 @@
+{
+  "python.pythonPath": "/Users/rafal/.local/share/virtualenvs/mp2-cCLv3yUR/bin/python2.7",
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Path": "/Users/rafal/.local/share/virtualenvs/mp2-cCLv3yUR/bin/flake8",
+  "python.linting.flake8Args": ["--max-line-length=100"],
+  "python.linting.pylintEnabled": false,
+  "python.formatting.provider": "yapf",
+  //   "python.formatting.autopep8Path": "/Users/rafal/.local/share/virtualenvs/mp2-cCLv3yUR/bin/autopep8",
+  //   "python.formatting.autopep8Args": ["--max-line-length", "100"],
+  "python.formatting.yapfPath": "/Users/rafal/.local/share/virtualenvs/mp2-cCLv3yUR/bin/yapf",
+  "python.formatting.yapfArgs": ["--style={column_limit:100}"],
+  "editor.formatOnSave": true
+}

@@ -1,0 +1,53 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{CS 440 Fall 2018 Homework Assignment 1}
+\author{Rafal Stapinski}
+\date{September 30, 2018}
+
+\begin{document}
+\maketitle
+
+
+\section{}
+\begin{table}[h]
+\begin{tabular}{|l|l|l|l|}
+\hline
+BFS                  & DFS                  & uniform-cost                  & A*                            \\ \hline
+q = {[}A{]}          & q = {[}A{]}          & q = {[}A{]}                   & q = {[}A{]}                   \\ \hline
+A, q = {[}B, C, D{]} & A, q = {[}B, C, D{]} & A, q = {[}B(3), C(5), D(4){]} & A, q = {[}B(7), C(8), D(8){]} \\ \hline
+B, q = {[}C, F{]}    & B, q = {[}C, F{]}    & B, q = {[}C(1), F(6){]}       & B, q = {[}C(4), F(6){]}       \\ \hline
+C, q = {[}D, E, F{]} & C, q = {[}D, E, F{]} & C, q = {[}E(2), D(5), F(5){]} & C, q = {[}E(3), F(5), D(9){]} \\ \hline
+D, q = {[}E{]}       & D, q = {[}E{]}       & E, q = {[}F(2), D(3){]}       & E, q = {[}F(2), D(7){]}       \\ \hline
+F                    & E, q = {[}F{]}       & F                             & F                             \\ \hline
+                     & F                    &                               &                               \\ \hline
+\end{tabular}
+\end{table}
+
+\section{}
+
+Cycle, Graph Search, BFS - O(k), the search will alternate by searching one on the left, then on the right, traversing 2*k nodes \newline
+Cycle, Graph Search, DFS - O(n), the search will start on the left and have to traverse n - k nodes before getting to k \newline
+Cycle, Tree Search, BFS - O(n), since visited nodes are not kept track of, this search will always look at the left node first, operating like a DFS would \newline
+Cycle, Graph Search, DFS - O(n), this search will operate the same way graph DFS would since it will look at left neighbor first anyway \newline
+\newline
+IDS, Graph Search, BFS - O(m), the search will alternate between left and right, requiring 4m nodes to be visited \newline
+IDS, Graph Search, DFS - O($\infty$), this search will continue indefinitely into the left \newline
+IDS, Tree Search, BFS - O($\infty$), this search will continue forever into the left since it does not keep track of visited neighbours \newline 
+IDS, Tree Search, DFS - O(${\infty}$), this search will continue forever into the left like graph DFS would
+
+\end{document}

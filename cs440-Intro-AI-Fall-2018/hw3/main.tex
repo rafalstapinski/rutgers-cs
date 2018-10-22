@@ -1,0 +1,191 @@
+\documentclass[a4paper]{article}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{qtree}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\title{CS 440 Fall 2018 Homework Assignment 3}
+\author{Rafal Stapinski }
+\date{October 21 2018}
+
+\begin{document}
+
+\maketitle
+
+\section{}
+
+Variables: X = ${\{V_1,...,V_n\}}$ for V in G where G = (V,E)\newline
+Domains: D = ${\{c_1, c_2,...,c_k\}}$ \newline
+Constraints: ${v_i \neq v_j}$ if i,j are adjacent
+
+\section{}
+
+Variables: X = ${\{v_{1,1},...,v_{1,9},v_{2,1},...,v_{2,9},...,...,v_{9,1},...,v_{9,9}\}}$ \newline
+Domain: D = {1, 2, 3, 4, 5, 6, 7, 8, 9} \newline
+Constraints: \newline
+There is a one-to-one mapping of every $v_{i,1}$ through $v_{i,9}$ and the domain\newline
+There is a one-to-one mapping of every $v_{1,j}$ through $v_{9,j}$ and the domain \newline
+There is a one-to-one mapping of every set of {\{$v_{1,1}$,...,$v_{3,3}$\}, \{$v_{1,4}$,...,$v_{3,6}$\}, \{$v_{1,7}$,...,$v_{3,9}$\}, \{$v_{4,1}$,...,$v_{6,3}$\}, \{$v_{4,4}$,...,$v_{6,6}$\}, \{$v_{4,7}$,...,$v_{6,9}$\}, \{$v_{7,1}$,...,$v_{9,3}$\}, \{$v_{7,4}$,...,$v_{9,6}$\}, \{$v_{7,7}$,...,$v_{9,9}$\}} to the domain \newline \newline
+
+The first constraint ensures that every row has a one-to-one mapping to the domain, so that there is exactly one of 1-9 in each row. The second constraint ensures the same mapping but for every column. The third constraint ensures the same mapping for each of the 9 squares. 
+
+\section{}
+\subsection{}
+
+% \Tree[.a [.b [.e .f .g]]
+
+\Tree[.{a \textit{14}}
+            [.{b \textit{12}}
+                {e \textit{12}} {f \textit{23}} {g \textit{24}}
+            ]
+            [.{c \textit{14}}
+                [.{h \textit{21}}
+                    {m \textit{12}} {n \textit{21}}
+                ]
+                [.{i \textit{26}}
+                    {o \textit{25}} {p \textit{2}} {q \textit{26}}
+                ]
+                [.{j \textit{14}}
+                   {r \textit{11}} {s \textit{14}}
+                ]
+            ]
+            [.{d \textit{9}}
+                [.{k \textit{10}}
+                    {t \textit{4}} {u \textit{10}} 
+                ]
+                [.{l \textit{9}}
+                   {v \textit{8}} {w \textit{9}}
+                ]
+            ]
+        ]
+
+The best path is: a, c, j, s
+
+\subsection{}
+
+Visit A \newline
+Visit B \newline
+Visit E \newline
+Visit F \newline
+Visit G \newline
+Visit C \newline
+Visit H \newline
+Visit N \newline
+Visit I \newline
+Visit O \newline
+Skip P, Q, $\alpha$ of I = 25 $\beta$ of I = 21 \newline
+Visit J \newline
+Visit R \newline
+Visit S \newline
+Visit D \newline
+Visit K \newline
+Visit T \newline
+Visit U \newline
+Visit L \newline
+Visit V \newline
+Visit W \newline
+
+\section{}
+\subsection{}
+\Tree
+[.{(1,4)}
+    [.{(2, 4)}
+        [.{(2, 3)}
+            {$\boxed{(4, 3)}$ \textcircled{1}}
+            [.{(1, 3)}
+                {$\boxed{\boxed{(1, 4)}}$ \textcircled{?}}
+                [.{(1, 2)}
+                    [.{(3, 2)}
+                        {$\boxed{(3, 1)}$ \textcircled{-1}}
+                        [.{(3, 4)}
+                            {$\boxed{\boxed{(2, 4)}}$ \textcircled{?}}
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+
+\subsection{}
+\Tree
+[.{(1,4) \textcircled{1}}
+    [.{(2, 4) \textcircled{1}}
+        [.{(2, 3) \textcircled{1}}
+            {$\boxed{(4, 3)}$ \textcircled{1}}
+            [.{(1, 3) \textcircled{-1}}
+                {$\boxed{\boxed{(1, 4)}}$ \textcircled{1}}
+                [.{(1, 2) \textcircled{-1}}
+                    [.{(3, 2) \textcircled{-1}}
+                        {$\boxed{(3, 1)}$ \textcircled{-1}}
+                        [.{(3, 4) \textcircled{1}}
+                            {$\boxed{\boxed{(2, 4)}}$ \textcircled{1}}
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+]
+
+The two looped states occur at (1,4) and (2,4) where there is only one possible move. Because of this, there would not be any change in predicted outcome. Both states only have one meaningful child state (2,3). In this child state, a max occurs which always results in a 1 due to the (4,3) terminal state, so both of the loop states were set to 1.
+
+\subsection{}
+The standard MinMax algorithm would fail as it would as it would continue infinitely at the first loop state (1,4). To work on any tree with loop states, the MinMax algorithm should be modified to initially skip over any loop states it encounters. When returning to a state that infers from a deterministic and loop state, the algorithm can now choose the appropriate min/max of that state based on whether the parent loop state is a min/max. This would work in all cases, inferring the optimal min/max at a current loop state based on what the optimal choice would be of the parent/original state this would go to.
+
+\subsection{}
+In cases where n is even, A and B meet become adjacent because of B's turn. At this point, A begins by skipping over B, thus always being closer to its goal from that point on. 
+In cases where n is odd, B skips over A first thus being closer to its goal. 
+In the case where n=3, A always wins on the first turn.
+
+\section{}
+\subsection{}
+For Player 1, the dominant strategy is 3. For Player 2 there is no dominant strategy. For Player 1, regardless of choice of Player 2, strategy 3 provides the highest payoff. For Player 2, the choices of Player 1 change the highest payoff strategy. 
+\subsection{}
+(1,b), (2,a), (3,b) are Nash equilibria. In these cases, neither player has anything to gain by changing their choice alone. In all three cases, these are the choices the player would make had the other played made their move already. 
+
+\section{}
+\subsection{}
+A = system armed \newline
+M = motion detected \newline
+S = alarm will sound \newline
+F = fire \newline
+\newline
+\newline
+${A \land M = S}$ \newline
+${(A \lor F) \Rightarrow S}$ \newline
+${F \Rightarrow S}$ \newline
+M = T \newline
+
+\subsection{}
+
+${\neg(A \lor F) = \neg A \land \neg F}$ \newline 
+${(A \lor F) \Rightarrow S = \neg(A \lor F) \lor S} = \neg A \land \neg F \lor S$ \newline
+$\{\neg A\} \{\neg F, S\}$ \newline
+
+\section{}
+Expectation of X = 6
+
+Probability of tails on first flip is 1/2, total number of flips requires is X+1 \newline
+Probability of heads then tails is 1/4, with flips required being x+2 \newline
+Probability of two heads is 1/4 and the required flips is 2 \newline
+\newline
+Adding the variables we get:\newline
+X = (1/2)(X+1) + (1/4)(X+2) + (1/4)*2
+X = X/2 + 1/2 + X/4 + 1/2 + 1/2
+X = 3X/4 + 3/2
+X/4 - 3/2 = 0
+X = 6
+
+\end{document}

@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "/Users/rafal/.local/share/virtualenvs/trading-bot-prVuzosz/bin/python",
+    "python.formatting.blackPath": "black",
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "black"
+}
