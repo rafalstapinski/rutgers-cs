@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "python.pythonPath": "/Users/rafal/.local/share/virtualenvs/cs336-Prin-Info-Data-Mgmt-Fall-2018-907fvJYG/bin/python3",
+  "python.formatting.provider": "black",
+  "python.formatting.blackPath": "/Users/rafal/.local/share/virtualenvs/cs336-Prin-Info-Data-Mgmt-Fall-2018-907fvJYG/bin/black",
+  "python.formatting.blackArgs": ["-l", "100"],
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Path": "/Users/rafal/.local/share/virtualenvs/cs336-Prin-Info-Data-Mgmt-Fall-2018-907fvJYG/bin/flake8",
+  "python.linting.flake8Args": ["--max-line-length", "100"]
+}
