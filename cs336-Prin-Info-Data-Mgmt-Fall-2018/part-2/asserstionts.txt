@@ -1,0 +1,5 @@
+sells
+
+CREATE ASSERTION sellsPriceInRange CHECK (
+    price > (SELECT price FROM products WHERE id = product_id)
+)
