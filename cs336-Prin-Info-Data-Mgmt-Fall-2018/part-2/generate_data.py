@@ -4,6 +4,7 @@ import requests
 from datetime import datetime
 import json
 import mysql.connector
+from random import randint, choice
 
 
 def create_tables():
@@ -22,10 +23,11 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS bars (
             id serial PRIMARY KEY,
-            name varchar(30) NOT NULL,
+            name varchar(100) NOT NULL UNIQUE,
             address text NOT NULL,
             opens SMALLINT,
-            closes SMALLINT
+            closes SMALLINT,
+            state varchar(30) NOT NULL
         );
     """
     )
@@ -189,8 +191,12 @@ def insert_bars():
         venues = json.loads(f.read())
 
     to_insert = []
+    processed = []
 
     for venue in progressbar.progressbar(venues):
+
+        if venue["name"] in processed:
+            continue
 
         params = {
             "format": "json",
@@ -202,15 +208,22 @@ def insert_bars():
 
         r = requests.get("https://nominatim.openstreetmap.org/reverse", params=params).json()
 
-        to_insert.append(
-            (
-                venue["name"],
-                r["display_name"].replace(",", ""),
-                venue["opens"],
-                venue["closes"],
-                r["address"]["state"],
+        try:
+
+            to_insert.append(
+                (
+                    venue["name"],
+                    r["display_name"].replace(",", ""),
+                    venue["opens"],
+                    venue["closes"],
+                    r["address"]["state"],
+                )
             )
-        )
+
+            processed.append(venue["name"])
+
+        except KeyError:
+            continue
 
     connection = mysql.connector.connect(
         user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
@@ -230,25 +243,49 @@ def insert_bars():
 def insert_sells():
 
     products = {
-        ("Coors Light", 2),
-        ("Budweiser", 3),
-        ("Stella Artois", 4),
-        ("Stone IPA", 4),
-        ("Angry Orchards", 4),
-        ("Dos Equis", 3),
-        ("Miller Lite", 2),
-        ("Blue Moon", 4),
-        ("Modelo Especial", 5),
-        ("Rodenbach Grand Cru", 6),
-        ("Kolsch", 6),
-        ("Tyskie", 5),
-        ("Lech", 5),
+        ("Coors Light", 2, True),
+        ("Budweiser", 3, True),
+        ("Stella Artois", 4, True),
+        ("Stone IPA", 4, True),
+        ("Angry Orchards", 4, True),
+        ("Dos Equis", 3, True),
+        ("Miller Lite", 2, True),
+        ("Blue Moon", 4, True),
+        ("Modelo Especial", 5, True),
+        ("Rodenbach Grand Cru", 6, True),
+        ("Kolsch", 6, True),
+        ("Tyskie", 5, True),
+        ("Lech", 5, True),
+        ("Nachos", 8, False),
+        ("Burger", 11, False),
+        ("Fries", 5, False),
     }
+
+    venues = []
+
+    with open("venues.json", "r") as f:
+        venues = json.loads(f.read())
+
+    connection = mysql.connector.connect(
+        user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
+    )
+
+    cursor = connection.cursor()
+
+    for venue in venues:
+
+        print("SELECT * FROM bars WHERE name = '{}';".format(venue["name"]))
+
+        # cursor.execute()
+        # bar_id = cursor.fetchone()
+        # print(bar_id)
+
+    connection.close()
 
 
 if __name__ == "__main__":
 
     # create_tables()
     # create_bars()
-    # insert_sells()
     insert_bars()
+    # insert_sells()
