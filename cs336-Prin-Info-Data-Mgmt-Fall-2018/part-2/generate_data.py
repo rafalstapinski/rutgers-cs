@@ -2,6 +2,8 @@ import psycopg2
 import config
 import progressbar
 import requests
+from datetime import datetime
+import json
 
 conn = psycopg2.connect(
     host=config.db_host, user=config.db_user, password=config.db_pass, database=config.db_name
@@ -120,6 +122,8 @@ def create_bars():
 
     for coors in coordinates:
 
+        print(coors)
+
         params = {
             "ll": "{},{}".format(coors[0], coors[1]),
             "intent": "browse",
@@ -144,23 +148,40 @@ def create_bars():
                     }
                 )
 
-                break
-
-        break
-
     params = {"v": 20181027, "client_id": config.client_id, "client_secret": config.client_secret}
 
-    for venue in venues:
+    print("premium calls")
+
+    for venue in progressbar.progressbar(venues):
         response = requests.get(
             "https://api.foursquare.com/v2/venues/{}".format(venue["id"]), params=params
         ).json()
 
-        print(response)
+        if "response" in response:
+
+            try:
+
+                hours = response["response"]["venue"]["hours"]["timeframes"][-1]["open"][0][
+                    "renderedTime"
+                ].split("–")
+
+                open_time = datetime.strptime(hours[0], "%I:%M %p")
+                close_time = datetime.strptime(hours[1], "%I:%M %p")
+
+                venue["opens"] = int(open_time.hour * 60 + open_time.minute)
+                venue["closes"] = int(close_time.hour * 60 + close_time.minute)
+                venue["price"] = response["response"]["venue"]["price"]["tier"]
+            except Exception:
+                continue
+
+    print("writing to file")
+    with open("venues.json", "w") as f:
+        f.write(json.dumps(venues))
 
 
 if __name__ == "__main__":
 
     # create_tables()
-    create_bars()
-
+    # create_bars()
+    create_sells()
     conn.close()
