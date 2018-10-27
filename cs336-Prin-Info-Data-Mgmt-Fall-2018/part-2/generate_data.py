@@ -1,20 +1,22 @@
-import psycopg2
 import config
 import progressbar
 import requests
 from datetime import datetime
 import json
-
-conn = psycopg2.connect(
-    host=config.db_host, user=config.db_user, password=config.db_pass, database=config.db_name
-)
-cursor = conn.cursor()
+import mysql.connector
 
 
 def create_tables():
     """
         Creates tables based on predefined scheme
     """
+
+    connection = mysql.connector.connect(
+        user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
+    )
+
+    cursor = connection.cursor()
+
     # bars table
     cursor.execute(
         """
@@ -44,7 +46,8 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS products (
             id serial PRIMARY KEY,
-            name varchar(30) NOT NULL
+            name varchar(30) NOT NULL,
+            base_price float(2)
         );
         """
     )
@@ -53,7 +56,7 @@ def create_tables():
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS transactions (
-            id bigserial PRIMARY KEY,
+            id serial PRIMARY KEY,
             sum float(2),
             time TIMESTAMP
         );
@@ -104,7 +107,8 @@ def create_tables():
     """
     )
 
-    conn.commit()
+    connection.commit()
+    connection.close()
 
 
 def create_bars():
@@ -113,8 +117,6 @@ def create_bars():
     """
 
     bar_category_id = "4bf58dd8d48988d116941735"
-
-    # venues = client.Venues.search()
 
     coordinates = [(40.4019692, -74.3123014), (40.49578698007111, -74.45297241210939)]
 
@@ -179,9 +181,74 @@ def create_bars():
         f.write(json.dumps(venues))
 
 
+def insert_bars():
+
+    venues = []
+
+    with open("venues.json", "r") as f:
+        venues = json.loads(f.read())
+
+    to_insert = []
+
+    for venue in progressbar.progressbar(venues):
+
+        params = {
+            "format": "json",
+            "lat": venue["lat"],
+            "lon": venue["lng"],
+            "zoom": 18,
+            "addressdetails": 1,
+        }
+
+        r = requests.get("https://nominatim.openstreetmap.org/reverse", params=params).json()
+
+        to_insert.append(
+            (
+                venue["name"],
+                r["display_name"].replace(",", ""),
+                venue["opens"],
+                venue["closes"],
+                r["address"]["state"],
+            )
+        )
+
+    connection = mysql.connector.connect(
+        user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
+    )
+
+    cursor = connection.cursor()
+
+    cursor.executemany(
+        "INSERT INTO bars (name, address, opens, closes, state) VALUES (%s, %s, %s, %s, %s)",
+        to_insert,
+    )
+
+    connection.commit()
+    connection.close()
+
+
+def insert_sells():
+
+    products = {
+        ("Coors Light", 2),
+        ("Budweiser", 3),
+        ("Stella Artois", 4),
+        ("Stone IPA", 4),
+        ("Angry Orchards", 4),
+        ("Dos Equis", 3),
+        ("Miller Lite", 2),
+        ("Blue Moon", 4),
+        ("Modelo Especial", 5),
+        ("Rodenbach Grand Cru", 6),
+        ("Kolsch", 6),
+        ("Tyskie", 5),
+        ("Lech", 5),
+    }
+
+
 if __name__ == "__main__":
 
     # create_tables()
     # create_bars()
-    create_sells()
-    conn.close()
+    # insert_sells()
+    insert_bars()
