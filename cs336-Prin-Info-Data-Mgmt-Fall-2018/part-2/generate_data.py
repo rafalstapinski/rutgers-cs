@@ -240,9 +240,9 @@ def insert_bars():
     connection.close()
 
 
-def insert_sells():
+def insert_products():
 
-    products = {
+    products = [
         ("Coors Light", 2, True),
         ("Budweiser", 3, True),
         ("Stella Artois", 4, True),
@@ -259,7 +259,21 @@ def insert_sells():
         ("Nachos", 8, False),
         ("Burger", 11, False),
         ("Fries", 5, False),
-    }
+    ]
+
+    connection = mysql.connector.connect(
+        user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
+    )
+
+    cursor = connection.cursor()
+
+    cursor.executemany("INSERT INTO products (name, price, is_beer) VALUES (%s, %s, %s)", products)
+
+    connection.commit()
+    connection.close()
+
+
+def insert_sells():
 
     venues = []
 
@@ -274,11 +288,13 @@ def insert_sells():
 
     for venue in venues:
 
-        print("SELECT * FROM bars WHERE name = '{}';".format(venue["name"]))
+        cursor.execute("SELECT * FROM bars WHERE name = %s", (venue["name"],))
+        bar_id = cursor.fetchone()
 
-        # cursor.execute()
-        # bar_id = cursor.fetchone()
-        # print(bar_id)
+        if bar_id is None:
+            continue
+
+        # for each venue, choose a random number of products and insert + price premium
 
     connection.close()
 
@@ -287,5 +303,6 @@ if __name__ == "__main__":
 
     # create_tables()
     # create_bars()
-    insert_bars()
+    # insert_bars()
+    insert_products()
     # insert_sells()
