@@ -4,7 +4,7 @@ import requests
 from datetime import datetime
 import json
 import mysql.connector
-from random import randint, choice
+from random import randint, sample
 
 
 def create_tables():
@@ -286,16 +286,31 @@ def insert_sells():
 
     cursor = connection.cursor()
 
+    cursor.execute("SELECT * FROM products")
+
+    products = cursor.fetchall()
+
     for venue in venues:
 
         cursor.execute("SELECT * FROM bars WHERE name = %s", (venue["name"],))
-        bar_id = cursor.fetchone()
+        bar = cursor.fetchone()
 
-        if bar_id is None:
+        if bar is None:
             continue
 
         # for each venue, choose a random number of products and insert + price premium
 
+        to_sell = sample(products, randint(7, 14))
+
+        price_premium = 0 if "price" not in venue else 0.25 * venue["price"]
+
+        this_sells = [(product[0], bar[0], product[2] + price_premium) for product in to_sell]
+
+        cursor.executemany(
+            "INSERT INTO sells (product_id, bar_id, price) VALUES (%s, %s, %s)", this_sells
+        )
+
+    connection.commit()
     connection.close()
 
 
@@ -304,5 +319,5 @@ if __name__ == "__main__":
     # create_tables()
     # create_bars()
     # insert_bars()
-    insert_products()
-    # insert_sells()
+    # insert_products()
+    insert_sells()
