@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+black = "*"
+"flake8" = "*"
+numpy = "*"
+pandas = "*"
+mysql-connector = "*"
+"psycopg2" = "*"
+"psycopg2-binary" = "*"
+"progressbar2" = "*"
+names = "*"
+foursquare = "*"
+sshtunnel = "*"
+pymysql = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
