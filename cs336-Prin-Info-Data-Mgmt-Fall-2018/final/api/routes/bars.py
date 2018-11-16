@@ -20,6 +20,6 @@ class Bars(Route):
                 self.Status.Unauthorized()
                 return
 
-            bar_serializable = bar.__dict
+            bar_serializable = bar.__dict__
 
             return self.write({"bar": bar_serializable})

@@ -42,8 +42,26 @@ class Drinker(Resource):
 
         cursor.execute(
             """SELECT * FROM drinkers WHERE id IN
-                        (SELECT drinker_id FROM likes WHERE product_id = %s)""",
+                (SELECT drinker_id FROM likes WHERE product_id = %s)""",
             params=(product_id,),
+        )
+
+        drinkers = cursor.fetchall()
+
+        cursor.close()
+        connection.close()
+
+        return [Model(drinker) for drinker in drinkers]
+
+    def get_patrons_of(self, bar_id: int) -> List[Model]:
+
+        connection = self.connect_db()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """SELECT * FROM drinkers WHERE id IN
+                (SELECT drinker_id FROM frequents WHERE drinker_id = %s)""",
+            params=(bar_id,),
         )
 
         drinkers = cursor.fetchall()
