@@ -1,0 +1,4 @@
+node_modules
+droplet.py
+*.pyc
+sftp.json
