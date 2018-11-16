@@ -22,7 +22,7 @@ class Drinker(Resource):
         connection = self.connect_db()
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM beers WHERE id = %s", params=(drinker_id))
+        cursor.execute("SELECT * FROM drinkers WHERE id = %s", params=(drinker_id))
 
         drinker = cursor.fetchone()
 

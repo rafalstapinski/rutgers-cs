@@ -3,10 +3,23 @@ from resources.bar import Bar
 
 
 class Bars(Route):
-    def GET(self, resource_id: str = None) -> str:
+    def GET(self, bar_id: str = None) -> str:
 
-        if resource_id is None or resource_id == "":
+        if bar_id is None or bar_id == "":
 
-            return self.write({"bars": Bar().get_bars()})
+            bars = Bar().get_all()
+            bars_serializable = [bar.__dict__ for bar in bars]
 
-        return resource_id
+            return self.write({"bars": bars_serializable})
+
+        else:
+
+            bar = Bar().get_one(bar_id)
+
+            if bar is None:
+                self.Status.Unauthorized()
+                return
+
+            bar_serializable = bar.__dict
+
+            return self.write({"bar": bar_serializable})
