@@ -4,6 +4,7 @@
     "editor.formatOnSave": false
   },
   "tslint.autoFixOnSave": true,
+  "prettier.tslintIntegration": true,
   "python.pythonPath": "/Users/rafal/.local/share/virtualenvs/api-KKL2tlDW/bin/python",
   "python.venvPath": "Users/rafal/.local/share/virtualenvs/",
   "python.linting.enabled": true,
