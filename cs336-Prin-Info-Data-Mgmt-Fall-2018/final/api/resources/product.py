@@ -1,6 +1,6 @@
 from resources.resource import Resource
 from typing import List
-from models.product import Product as ProductObj
+from models.product import Product as Model
 
 
 class Product(Resource):
@@ -16,7 +16,7 @@ class Product(Resource):
         cursor.close()
         connection.close()
 
-        return [ProductObj(product) for product in products]
+        return [Model(product) for product in products]
 
     def get_one(self, product_id: int) -> tuple:
 
@@ -33,7 +33,7 @@ class Product(Resource):
         if product is None:
             return product
 
-        return ProductObj(product)
+        return Model(product)
 
     def get_liked_by(self, drinker_id: int) -> List[tuple]:
 
@@ -51,4 +51,4 @@ class Product(Resource):
         cursor.close()
         connection.close()
 
-        return [ProductObj(product) for product in products]
+        return [Model(product) for product in products]

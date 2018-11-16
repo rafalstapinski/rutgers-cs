@@ -1,10 +1,10 @@
 from resources.resource import Resource
 from typing import List
-from models.bar import Bar as BarObj
+from models.bar import Bar as Model
 
 
 class Bar(Resource):
-    def get_all(self) -> List[BarObj]:
+    def get_all(self) -> List[Model]:
 
         connection = self.connect_db()
         cursor = connection.cursor()
@@ -16,9 +16,9 @@ class Bar(Resource):
         cursor.close()
         connection.close()
 
-        return [BarObj(bar) for bar in bars]
+        return [Model(bar) for bar in bars]
 
-    def get_one(self, bar_id: int) -> BarObj:
+    def get_one(self, bar_id: int) -> Model:
 
         connection = self.connect_db()
         cursor = connection.cursor()
@@ -33,4 +33,4 @@ class Bar(Resource):
         if bar is None:
             return bar
 
-        return BarObj(bar)
+        return Model(bar)
