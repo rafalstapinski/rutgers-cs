@@ -10,6 +10,7 @@ from routes.sellers import Sellers
 from routes.sells import Sells
 from routes.bar_transactions import BarTransactions
 from routes.drinker_transactions import DrinkerTransactions
+from routes.bills import Bills
 
 urls_styled = (
     ("/bars/(.+)/transactions", BarTransactions),
@@ -23,6 +24,7 @@ urls_styled = (
     ("/bars[/]?(.*)", Bars),
     ("/products[/]?(.*)", Products),
     ("/drinkers[/]?(.*)", Drinkers),
+    ("/bills/(.+)", Bills),
 )
 
 urls = [v for sl in urls_styled for v in sl]
