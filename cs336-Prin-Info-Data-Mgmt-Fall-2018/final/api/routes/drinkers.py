@@ -20,6 +20,6 @@ class Drinkers(Route):
                 self.Status.Unauthorized()
                 return
 
-            drinker_serializable = drinker.__dict
+            drinker_serializable = drinker.__dict__
 
             return self.write({"drinker": drinker_serializable})

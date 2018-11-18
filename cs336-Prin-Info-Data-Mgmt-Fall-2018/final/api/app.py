@@ -8,12 +8,16 @@ from routes.frequents import Frequents
 from routes.patrons import Patrons
 from routes.sellers import Sellers
 from routes.sells import Sells
+from routes.bar_transactions import BarTransactions
+from routes.drinker_transactions import DrinkerTransactions
 
 urls_styled = (
+    ("/bars/(.+)/transactions", BarTransactions),
     ("/bars/(.+)/sells", Sells),
     ("/bars/(.+)/patrons", Patrons),
     ("/products/(.+)/sellers", Sellers),
     ("/products/(.+)/likers", Likers),
+    ("/drinkers/(.+)/transactions", DrinkerTransactions),
     ("/drinkers/(.+)/frequents", Frequents),
     ("/drinkers/(.+)/likes", Likes),
     ("/bars[/]?(.*)", Bars),
