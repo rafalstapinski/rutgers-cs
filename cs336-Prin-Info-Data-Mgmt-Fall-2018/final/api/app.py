@@ -11,6 +11,7 @@ from routes.sells import Sells
 from routes.bar_transactions import BarTransactions
 from routes.drinker_transactions import DrinkerTransactions
 from routes.bills import Bills
+from routes.drinkers_billed import DrinkersBilled
 
 urls_styled = (
     ("/bars/(.+)/transactions", BarTransactions),
@@ -21,6 +22,7 @@ urls_styled = (
     ("/drinkers/(.+)/transactions", DrinkerTransactions),
     ("/drinkers/(.+)/frequents", Frequents),
     ("/drinkers/(.+)/likes", Likes),
+    ("/drinkers/(.+)/billed", DrinkersBilled),
     ("/bars[/]?(.*)", Bars),
     ("/products[/]?(.*)", Products),
     ("/drinkers[/]?(.*)", Drinkers),

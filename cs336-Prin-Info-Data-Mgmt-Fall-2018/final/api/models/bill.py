@@ -24,3 +24,6 @@ class Bill:
 
         for item in billed:
             self.billed.append(self.Billed(item))
+
+        item_total = sum([b.price for b in self.billed])
+        self.tip = round(self.transaction.total - (item_total * 1.07), 2)

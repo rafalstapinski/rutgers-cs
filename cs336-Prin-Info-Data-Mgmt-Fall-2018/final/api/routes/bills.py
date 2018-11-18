@@ -11,15 +11,16 @@ class Bills(Route):
 
         else:
 
-            transaction = Bill().get_bill(transaction_id)
+            bill = Bill().get_bill(transaction_id)
 
-            if transaction is None:
+            if bill is None:
                 self.Status.Unauthorized()
                 return
 
-            transaction_serializable = {
-                "transaction": transaction.transaction.__dict__,
-                "billed": [item.__dict__ for item in transaction.billed],
+            bill_serializable = {
+                "transaction": bill.transaction.__dict__,
+                "billed": [item.__dict__ for item in bill.billed],
+                "tip": bill.tip,
             }
 
-            return self.write({"bill": transaction_serializable})
+            return self.write({"bill": bill_serializable})
