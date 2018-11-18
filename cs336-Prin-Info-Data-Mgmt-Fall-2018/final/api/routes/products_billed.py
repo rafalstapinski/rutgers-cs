@@ -11,7 +11,7 @@ class ProductsBilled(Route):
 
         else:
 
-            billed = Billed().get_billed_by(product_id)
+            billed = Billed().get_billed_of(product_id)
             billed_serializable = [item.__dict__ for item in billed]
 
             return self.write({"billed": billed_serializable})

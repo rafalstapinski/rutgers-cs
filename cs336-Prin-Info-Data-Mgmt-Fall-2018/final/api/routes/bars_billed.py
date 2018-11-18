@@ -11,7 +11,7 @@ class BarsBilled(Route):
 
         else:
 
-            billed = Billed().get_billed_by(bar_id)
+            billed = Billed().get_billed_at(bar_id)
             billed_serializable = [item.__dict__ for item in billed]
 
             return self.write({"billed": billed_serializable})
