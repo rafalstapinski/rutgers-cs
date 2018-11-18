@@ -12,13 +12,17 @@ from routes.bar_transactions import BarTransactions
 from routes.drinker_transactions import DrinkerTransactions
 from routes.bills import Bills
 from routes.drinkers_billed import DrinkersBilled
+from routes.products_billed import ProductsBilled
+from routes.bars_billed import BarsBilled
 
 urls_styled = (
     ("/bars/(.+)/transactions", BarTransactions),
     ("/bars/(.+)/sells", Sells),
     ("/bars/(.+)/patrons", Patrons),
+    ("/bars/(.+)/billed", BarsBilled),
     ("/products/(.+)/sellers", Sellers),
     ("/products/(.+)/likers", Likers),
+    ("/products/(.+)/billed", ProductsBilled),
     ("/drinkers/(.+)/transactions", DrinkerTransactions),
     ("/drinkers/(.+)/frequents", Frequents),
     ("/drinkers/(.+)/likes", Likes),

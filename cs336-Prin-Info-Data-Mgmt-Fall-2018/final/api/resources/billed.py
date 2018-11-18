@@ -23,3 +23,43 @@ class Billed(Resource):
         billed = cursor.fetchall()
 
         return [Model(row) for row in billed]
+
+    def get_billed_of(self, product_id: int) -> List[Model]:
+
+        connection = self.connect_db()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """SELECT
+            b.transaction_id, b.bar_id, b.drinker_id, b.product_id, b.price, d.name, p.name, br.name
+            FROM billed b
+            INNER JOIN drinkers d ON b.drinker_id = d.id
+            INNER JOIN products p ON b.product_id = p.id
+            INNER JOIN bars br ON b.bar_id = br.id
+            WHERE b.product_id = %s""",
+            params=(product_id,),
+        )
+
+        billed = cursor.fetchall()
+
+        return [Model(row) for row in billed]
+
+    def get_billed_at(self, bar_id: int) -> List[Model]:
+
+        connection = self.connect_db()
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """SELECT
+            b.transaction_id, b.bar_id, b.drinker_id, b.product_id, b.price, d.name, p.name, br.name
+            FROM billed b
+            INNER JOIN drinkers d ON b.drinker_id = d.id
+            INNER JOIN products p ON b.product_id = p.id
+            INNER JOIN bars br ON b.bar_id = br.id
+            WHERE b.bar_id = %s""",
+            params=(bar_id,),
+        )
+
+        billed = cursor.fetchall()
+
+        return [Model(row) for row in billed]
