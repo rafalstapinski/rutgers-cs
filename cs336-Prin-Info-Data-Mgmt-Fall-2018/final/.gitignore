@@ -2,3 +2,5 @@ node_modules
 droplet.py
 *.pyc
 sftp.json
+dist
+reaqt-old

@@ -43,7 +43,9 @@ def create_tables():
         CREATE TABLE IF NOT EXISTS drinkers (
             id serial PRIMARY KEY,
             name varchar(40) NOT NULL,
-            address text NOT NULL
+            address text NOT NULL,
+            city varchar(50) NOT NULL,
+            state varchar(30) NOT NULL
         );
     """
     )
@@ -64,8 +66,12 @@ def create_tables():
         """
         CREATE TABLE IF NOT EXISTS transactions (
             id serial PRIMARY KEY,
-            sum float(2),
-            time TIMESTAMP
+            sum float(2) NOT NULL,
+            time TIMESTAMP,
+            drinker_id BIGINT UNSIGNED NOT NULL,
+            bar_id BIGINT UNSIGNED NOT NULL,
+            FOREIGN KEY (drinker_id) REFERENCES drinkers(id),
+            FOREIGN KEY (bar_id) REFERENCES bars(id)
         );
         """
     )
@@ -74,8 +80,10 @@ def create_tables():
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS likes (
-            drinker_id integer,
-            product_id integer
+            drinker_id BIGINT UNSIGNED,
+            product_id BIGINT UNSIGNED,
+            FOREIGN KEY (drinker_id) REFERENCES drinkers(id),
+            FOREIGN KEY (product_id) REFERENCES products(id)
         );
     """
     )
@@ -84,9 +92,11 @@ def create_tables():
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS sells (
-            product_id integer,
-            bar_id integer,
-            price float(2)
+            product_id BIGINT UNSIGNED,
+            bar_id BIGINT UNSIGNED,
+            price float(2),
+            FOREIGN KEY (bar_id) REFERENCES bars(id),
+            FOREIGN KEY (product_id) REFERENCES products(id)
         );
     """
     )
@@ -95,8 +105,10 @@ def create_tables():
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS frequents (
-            drinker_id integer,
-            bar_id integer
+            drinker_id BIGINT UNSIGNED,
+            bar_id BIGINT UNSIGNED,
+            FOREIGN KEY (bar_id) REFERENCES bars(id),
+            FOREIGN KEY (drinker_id) REFERENCES drinkers(id)
         );
     """
     )
@@ -105,11 +117,11 @@ def create_tables():
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS billed (
-            transaction_id integer,
-            bar_id integer,
-            drinker_id integer,
-            product_id integer,
-            price float(2)
+            transaction_id BIGINT UNSIGNED NOT NULL,
+            product_id BIGINT UNSIGNED NOT NULL,
+            price float(2) NOT NULL,
+            FOREIGN KEY (transaction_id) REFERENCES transactions(id),
+            FOREIGN KEY (product_id) REFERENCES products(id)
         );
     """
     )
@@ -127,9 +139,9 @@ def create_bars():
 
     venues = []
 
-    states = ["New Jersey", "Rhode Island", "Maine"]
+    places = ["Portland, Maine", "Bangor, Maine", "Augusta, Maine"]
 
-    for state in states:
+    for state in places:
 
         params = {
             "near": state,
@@ -157,8 +169,6 @@ def create_bars():
 
     params = {"v": 20181027, "client_id": config.client_id, "client_secret": config.client_secret}
 
-    print("premium calls")
-
     for venue in progressbar.progressbar(venues):
         response = requests.get(
             "https://api.foursquare.com/v2/venues/{}".format(venue["id"]), params=params
@@ -181,22 +191,24 @@ def create_bars():
             except Exception:
                 continue
 
-    print("writing to file")
-    with open("venues.json", "w") as f:
-        f.write(json.dumps(venues))
+    # print("writing to file")
+    # with open("venues_maine.json", "w") as f:
+    #     f.write(json.dumps(venues))
 
 
 def insert_bars():
 
     venues = []
 
-    with open("venues.json", "r") as f:
+    with open("venues_maine.json", "r") as f:
         venues = json.loads(f.read())
 
     to_insert = []
     processed = []
 
     for venue in progressbar.progressbar(venues):
+
+        time.sleep(1.5)
 
         if venue["name"] in processed:
             continue
@@ -321,13 +333,13 @@ def insert_drinkers():
 
     drinkers = []
 
-    sample_size = 250
+    sample_size = 500
 
     states = [
-        "./openaddr-short/me.csv",
+        # "./openaddr-short/me.csv",
         "./openaddr-short/nj.csv",
         "./openaddr-short/ri.csv",
-        "./openaddr-short/ct.csv",
+        # "./openaddr-short/ct.csv",
     ]
 
     dfs = []
@@ -340,6 +352,9 @@ def insert_drinkers():
     houses = pd.concat(dfs)
 
     for i, row in progressbar.progressbar(houses.iterrows(), max_value=sample_size * len(states)):
+        
+        # dont overload nominatim
+        time.sleep(.5)
 
         params = {
             "format": "json",
@@ -360,8 +375,9 @@ def insert_drinkers():
                     r["address"]["state"],
                 )
             )
-        except KeyError:
+        except Exception:
             continue
+
 
     connection = mysql.connector.connect(
         user=config.db_user, password=config.db_pass, host=config.db_host, database=config.db_name
@@ -396,7 +412,7 @@ def insert_likes():
 
     for drinker in drinkers:
 
-        drinker_likes = sample(products, randint(3, 7))
+        drinker_likes = sample(products, randint(4, 7))
 
         to_insert += [(drinker[0], like[0]) for like in drinker_likes]
 
@@ -533,17 +549,17 @@ def insert_billed_transactions():
                     dt = random_dt()
 
             cursor.execute(
-                "INSERT INTO transactions (sum, time) VALUES (%s, %s)", (transaction_sum, dt)
+                "INSERT INTO transactions (sum, time, drinker_id, bar_id) VALUES (%s, %s, %s, %s)", (transaction_sum, dt, drinker[0], bar[0])
             )
             transaction_id = cursor.lastrowid
 
             billed += [
-                (transaction_id, bar[0], drinker[0], product_id, sells_keyed[product_id][2])
+                (transaction_id, product_id, sells_keyed[product_id][2])
                 for product_id in bought
             ]
 
     cursor.executemany(
-        "INSERT INTO billed (transaction_id, bar_id, drinker_id, product_id, price) VALUES (%s,%s, %s, %s, %s)",
+        "INSERT INTO billed (transaction_id, product_id, price) VALUES (%s,%s, %s)",
         billed,
     )
 

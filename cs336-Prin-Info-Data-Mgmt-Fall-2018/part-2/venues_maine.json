@@ -1,687 +1,5 @@
 [
   {
-    "id": "4c0186480bce20a1e7e9f6c6",
-    "name": "Laurita Winery",
-    "lat": 40.069636075390186,
-    "lng": -74.50403204814255,
-    "opens": 660,
-    "closes": 1200
-  },
-  {
-    "id": "4c9d78ca2fb1a143fa3ee140",
-    "name": "Rat's Restaurant",
-    "lat": 40.237556651296245,
-    "lng": -74.71611967619742,
-    "opens": 660,
-    "closes": 1020,
-    "price": 3
-  },
-  {
-    "id": "4a035ca6f964a520b1711fe3",
-    "name": "Chickie's & Pete's",
-    "lat": 40.149802683915595,
-    "lng": -74.69989607388672,
-    "opens": 660,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4b3a62ebf964a5201e6625e3",
-    "name": "Moore's Tavern & Sports Bar",
-    "lat": 40.24138011270798,
-    "lng": -74.30229580347005,
-    "opens": 690,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "5943421d17556232c35b764a",
-    "name": "Old Town Pub",
-    "lat": 40.14773149779438,
-    "lng": -74.71279967150623
-  },
-  {
-    "id": "4b92c912f964a520861b34e3",
-    "name": "Jo Jo's Tavern",
-    "lat": 40.2362355600472,
-    "lng": -74.68875668712019,
-    "opens": 750,
-    "closes": 1410,
-    "price": 2
-  },
-  {
-    "id": "5092c6cde4b0578aad39a502",
-    "name": "Blend Bar & Bistro",
-    "lat": 40.22968895988126,
-    "lng": -74.6731421883606
-  },
-  {
-    "id": "53bf1438498e0a69c09fb977",
-    "name": "Rossi's Bar & Grill",
-    "lat": 40.22670325655433,
-    "lng": -74.68777842228955,
-    "opens": 660,
-    "closes": 1380,
-    "price": 1
-  },
-  {
-    "id": "4b7f317ef964a5200b1e30e3",
-    "name": "Wildflowers Too",
-    "lat": 40.180691635638894,
-    "lng": -74.66560479816332,
-    "opens": 660,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "5155ca2ee412bc703f8717c8",
-    "name": "Escondido Mexican Cuisine & Tequila Bar",
-    "lat": 40.24109077644196,
-    "lng": -74.30275818031704
-  },
-  {
-    "id": "4c2fb95a452620a165121e0f",
-    "name": "LongHorn Steakhouse",
-    "lat": 40.19383993763218,
-    "lng": -74.64295873134913,
-    "opens": 660,
-    "closes": 1380,
-    "price": 2
-  },
-  {
-    "id": "4b08a523f964a520281023e3",
-    "name": "HOB Tavern",
-    "lat": 40.14787849723159,
-    "lng": -74.71114252815495
-  },
-  {
-    "id": "4f298b55e4b09023de9b482c",
-    "name": "Charlie Brown's of East Windsor",
-    "lat": 40.27581754202331,
-    "lng": -74.5425659874586
-  },
-  {
-    "id": "4b7dcf76f964a5201ed62fe3",
-    "name": "Tavern On The Lake",
-    "lat": 40.26965725134585,
-    "lng": -74.52297915192476
-  },
-  {
-    "id": "4f24419fe4b0085e49c65f4d",
-    "name": "Station Bar and Grill",
-    "lat": 40.331038930174124,
-    "lng": -74.50656294822693,
-    "opens": 690,
-    "closes": 120,
-    "price": 1
-  },
-  {
-    "id": "4b9336d5f964a520873b34e3",
-    "name": "Pete's Steak House",
-    "lat": 40.19767231143066,
-    "lng": -74.69954259359656
-  },
-  {
-    "id": "59bee8ed91eaca08634797aa",
-    "name": "Jimmy's Fireside Grill",
-    "lat": 40.154728,
-    "lng": -74.698147
-  },
-  {
-    "id": "4da22db17aee54814a00d1fe",
-    "name": "First N' Ten Sports Pub",
-    "lat": 40.22635281142631,
-    "lng": -74.71272830297161
-  },
-  {
-    "id": "4c10ecb3f1b6a593159b7c27",
-    "name": "Stone Terrace By John Henry's",
-    "lat": 40.198873050371006,
-    "lng": -74.67733218769058,
-    "opens": 1020,
-    "closes": 1380,
-    "price": 3
-  },
-  {
-    "id": "4daf9b1ccda12a5f1ae26089",
-    "name": "Tara's Tavern",
-    "lat": 40.05088934667355,
-    "lng": -74.56236004204335,
-    "opens": 660,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4f11b982e4b019e99174f1d6",
-    "name": "Buy Rite Liquors",
-    "lat": 40.164382094938205,
-    "lng": -74.29410529108193
-  },
-  {
-    "id": "51d4fa55498e0454ed006d60",
-    "name": "Papa's Playpen",
-    "lat": 40.1325059690623,
-    "lng": -74.38799835783485
-  },
-  {
-    "id": "4b33ebb0f964a5200e2225e3",
-    "name": "Cream Ridge Winery",
-    "lat": 40.15107925333478,
-    "lng": -74.54867908172828,
-    "opens": 660,
-    "closes": 1020
-  },
-  {
-    "id": "4b5089f3f964a520812627e3",
-    "name": "Ruby Tuesday",
-    "lat": 40.1962413949117,
-    "lng": -74.63804421887912,
-    "opens": 660,
-    "closes": 1380,
-    "price": 2
-  },
-  {
-    "id": "4f2dd310e4b0118a8641a845",
-    "name": "Gary B's Smokestack",
-    "lat": 40.180479756906564,
-    "lng": -74.65133371610118
-  },
-  {
-    "id": "4b61d6b5f964a52029262ae3",
-    "name": "Plumsted Grill",
-    "lat": 40.09642141890123,
-    "lng": -74.5015972818007
-  },
-  {
-    "id": "4ba7dfd4f964a520f9ba39e3",
-    "name": "Pudgy's Sports Pub",
-    "lat": 40.03278023215422,
-    "lng": -74.57961852054501
-  },
-  {
-    "id": "4b5b0351f964a520dade28e3",
-    "name": "Chesterfield Inn",
-    "lat": 40.11517178592024,
-    "lng": -74.63970522047222,
-    "opens": 690,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4b662336f964a520c0152be3",
-    "name": "Bill's Olde Tavern",
-    "lat": 40.2365007385589,
-    "lng": -74.68817946615222
-  },
-  {
-    "id": "4ba51d16f964a520f8de38e3",
-    "name": "Hibernian Club",
-    "lat": 40.20295885081445,
-    "lng": -74.66626758764912
-  },
-  {
-    "id": "4baea5e8f964a520b5ca3be3",
-    "name": "Spigola Ristorante",
-    "lat": 40.19146626289479,
-    "lng": -74.6464385974959,
-    "opens": 780,
-    "closes": 1320,
-    "price": 4
-  },
-  {
-    "id": "4bca3382b6c49c7437079091",
-    "name": "Caddyshack Bar & Grill",
-    "lat": 40.33263431342282,
-    "lng": -74.56498467954121,
-    "opens": 450,
-    "closes": 1320,
-    "price": 2
-  },
-  {
-    "id": "5377f509498e485da450fe06",
-    "name": "The House of Happiness and Shots",
-    "lat": 40.237064361572266,
-    "lng": -74.68128967285156
-  },
-  {
-    "id": "4b08a415f964a520101023e3",
-    "name": "Jester's Cafe",
-    "lat": 40.14625597960531,
-    "lng": -74.71176373565707
-  },
-  {
-    "id": "4c50d0d0d797e21e373f027b",
-    "name": "Hanington's Reef",
-    "lat": 40.29160531135544,
-    "lng": -74.62306772210515
-  },
-  {
-    "id": "4b084880f964a5201a0823e3",
-    "name": "The Cool Cricket",
-    "lat": 40.134319526814636,
-    "lng": -74.73112419708082
-  },
-  {
-    "id": "4c954df26b35a143040a24dc",
-    "name": "Kelly's Bar",
-    "lat": 40.03446011206781,
-    "lng": -74.61720535738282
-  },
-  {
-    "id": "5751dfc4498e1f2ce64f6420",
-    "name": "La Cantina",
-    "lat": 40.137926,
-    "lng": -74.435869
-  },
-  {
-    "id": "4d01843e2f03224b9e0961e2",
-    "name": "Hamilton VFW",
-    "lat": 40.23431007386014,
-    "lng": -74.70458152461984
-  },
-  {
-    "id": "4ed4545761af8b867c997ba0",
-    "name": "Nottingham Tavern",
-    "lat": 40.23018320444038,
-    "lng": -74.66130420198687
-  },
-  {
-    "id": "4ba427a7f964a5202c8738e3",
-    "name": "Tessara's Restaurant",
-    "lat": 40.23096,
-    "lng": -74.675061
-  },
-  {
-    "id": "587ec6e9cc5b6a404c053f0e",
-    "name": "Main Street Pub",
-    "lat": 40.17092,
-    "lng": -74.668976
-  },
-  {
-    "id": "4bccfd23b6c49c7433d49491",
-    "name": "Ivy Tavern",
-    "lat": 40.18880135768579,
-    "lng": -74.70590537087833
-  },
-  {
-    "id": "519fed25498ee3b3e541c673",
-    "name": "Basement_Bar",
-    "lat": 40.193287,
-    "lng": -74.693167
-  },
-  {
-    "id": "579e6046498e4beb8f3d21b7",
-    "name": "The Sky Bar",
-    "lat": 40.135693,
-    "lng": -74.44061
-  },
-  {
-    "id": "4c0074b48c1076b09b3a2071",
-    "name": "Ernie's",
-    "lat": 40.21624208999193,
-    "lng": -74.62416627803476
-  },
-  {
-    "id": "598e6f9f3b83073f816384d3",
-    "name": "Freeplay Bar & Arcade",
-    "lat": 41.81996694682426,
-    "lng": -71.4121946593603
-  },
-  {
-    "id": "529a726d498e3eefc4227ed9",
-    "name": "Narragansett Ballroom at Omni Hotel",
-    "lat": 41.824939,
-    "lng": -71.415659
-  },
-  {
-    "id": "4bbe81a7006dc9b68058fb3f",
-    "name": "The Stable",
-    "lat": 41.82303314198352,
-    "lng": -71.41502112335151
-  },
-  {
-    "id": "4b0586aaf964a520776922e3",
-    "name": "The Hot Club",
-    "lat": 41.81718553432613,
-    "lng": -71.40170933241122
-  },
-  {
-    "id": "59a89d1ed3cce86105cb0fa5",
-    "name": "Bayberry Beer Hall",
-    "lat": 41.81912285277579,
-    "lng": -71.42214144430713
-  },
-  {
-    "id": "501c88d8e4b03b87a1a058ee",
-    "name": "The Trap",
-    "lat": 41.64452091399776,
-    "lng": -71.45080239007471
-  },
-  {
-    "id": "4a6f5798f964a520ead51fe3",
-    "name": "Trinity Brewhouse",
-    "lat": 41.82249764088927,
-    "lng": -71.41685331100109
-  },
-  {
-    "id": "53af6509498e6360c17c6001",
-    "name": "The Rooftop at the Providence G",
-    "lat": 41.82311982543865,
-    "lng": -71.41049042475528
-  },
-  {
-    "id": "56c61b28498e88a21b02274f",
-    "name": "The Malted Barley",
-    "lat": 41.8214234621217,
-    "lng": -71.41407424944305
-  },
-  {
-    "id": "4c8ed6e7daa937049f3250b1",
-    "name": "Murphy's Deli & Bar",
-    "lat": 41.823741020471324,
-    "lng": -71.41560762392915
-  },
-  {
-    "id": "4b0586aaf964a520906922e3",
-    "name": "Blake's Tavern",
-    "lat": 41.823083551323386,
-    "lng": -71.41475222000216,
-    "opens": 660,
-    "closes": 120,
-    "price": 1
-  },
-  {
-    "id": "4e8235e193ad48d50d77f72f",
-    "name": "Bar Louie",
-    "lat": 41.825871808747884,
-    "lng": -71.4130602005207,
-    "opens": 660,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4a8844dff964a520a40520e3",
-    "name": "Julians",
-    "lat": 41.8200144605388,
-    "lng": -71.42820027501784,
-    "opens": 480,
-    "closes": 840,
-    "price": 2
-  },
-  {
-    "id": "50de5bd1e4b075c2dccbe798",
-    "name": "The Eddy",
-    "lat": 41.82284585579322,
-    "lng": -71.41186052723592,
-    "opens": 960,
-    "closes": 60,
-    "price": 2
-  },
-  {
-    "id": "4ae24277f964a520898c21e3",
-    "name": "Graduate Center Bar",
-    "lat": 41.82343923515555,
-    "lng": -71.400597960896,
-    "opens": 960,
-    "closes": 60,
-    "price": 1
-  },
-  {
-    "id": "4b0586aaf964a520856922e3",
-    "name": "Dave & Buster's",
-    "lat": 41.827875,
-    "lng": -71.416487,
-    "opens": 660,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "548cf72c498e0c4238f1bfff",
-    "name": "Ogie's Trailer Park",
-    "lat": 41.817267812379036,
-    "lng": -71.42748630843244
-  },
-  {
-    "id": "4d7e847ae7e1721ea2dee10b",
-    "name": "Whiskey Republic",
-    "lat": 41.81812713590821,
-    "lng": -71.4022609047855
-  },
-  {
-    "id": "4b133654f964a520959523e3",
-    "name": "Tortilla Flats",
-    "lat": 41.83590379337606,
-    "lng": -71.40145160356137,
-    "opens": 780,
-    "closes": 60,
-    "price": 2
-  },
-  {
-    "id": "4e627235b61cd780888faaba",
-    "name": "NYLO Providence / Warwick",
-    "lat": 41.72627468317437,
-    "lng": -71.47231003016675
-  },
-  {
-    "id": "5923628f8c35dc54f9e04c2a",
-    "name": "Black Sheep",
-    "lat": 41.821143343466225,
-    "lng": -71.41527023836107
-  },
-  {
-    "id": "5aaaf601a22db749b6425d27",
-    "name": "BJ's Restaurant & Brewhouse",
-    "lat": 41.72187152685192,
-    "lng": -71.48160435280255
-  },
-  {
-    "id": "4b20776bf964a5207b3224e3",
-    "name": "Snookers",
-    "lat": 41.83768959994819,
-    "lng": -71.41485651574209
-  },
-  {
-    "id": "4d8d4dfa1716a143c25716f7",
-    "name": "Opa Hookah Lounge",
-    "lat": 41.823483989574,
-    "lng": -71.42573128984817,
-    "opens": 1020,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4dc4a37a7d8b14fb4616d41d",
-    "name": "The Dark Lady",
-    "lat": 41.82220295891238,
-    "lng": -71.41525465692274
-  },
-  {
-    "id": "4cb2741339458cfad79213a0",
-    "name": "The Providence Eagle",
-    "lat": 41.82090009155162,
-    "lng": -71.41386451753253
-  },
-  {
-    "id": "5478d943498e7162d99c042e",
-    "name": "Harry's Bar & Burger",
-    "lat": 41.82375249392557,
-    "lng": -71.42806557760423,
-    "opens": 690,
-    "closes": 120,
-    "price": 1
-  },
-  {
-    "id": "4b0586adf964a520d66922e3",
-    "name": "New Rivers American Bistro",
-    "lat": 41.82740842928809,
-    "lng": -71.40944721879279
-  },
-  {
-    "id": "4b4204b6f964a5208ecb25e3",
-    "name": "Iron Works Tavern",
-    "lat": 41.72938792877288,
-    "lng": -71.44285526828149,
-    "opens": 900,
-    "closes": 1320,
-    "price": 2
-  },
-  {
-    "id": "4b09d147f964a520281e23e3",
-    "name": "Main Street Coffee",
-    "lat": 41.662028933329104,
-    "lng": -71.45006925746452,
-    "opens": 420,
-    "closes": 60,
-    "price": 1
-  },
-  {
-    "id": "4d0311e6347da1cd1b76238f",
-    "name": "The Salon",
-    "lat": 41.8236229230257,
-    "lng": -71.41290631640722
-  },
-  {
-    "id": "4b0586aaf964a520746922e3",
-    "name": "Andreas Restaurant",
-    "lat": 41.829101224086486,
-    "lng": -71.40083653628811,
-    "opens": 540,
-    "closes": 120,
-    "price": 2
-  },
-  {
-    "id": "4b9bc77bf964a520252436e3",
-    "name": "Wolfgang Puck",
-    "lat": 41.72541928282346,
-    "lng": -71.43572856391282
-  },
-  {
-    "id": "54dd4867498ee506641b3f32",
-    "name": "Antonio's Pizza By The Slice",
-    "lat": 41.85804512864803,
-    "lng": -71.39162885479942
-  },
-  {
-    "id": "4b09d579f964a5206b1e23e3",
-    "name": "Tavern 12",
-    "lat": 41.719650880241524,
-    "lng": -71.44326001871579,
-    "opens": 690,
-    "closes": 60,
-    "price": 2
-  },
-  {
-    "id": "4c0a66c06071a593f76ddf32",
-    "name": "Bottles Fine Wine",
-    "lat": 41.825825373224944,
-    "lng": -71.38692158660895
-  },
-  {
-    "id": "5409f434498e1524a646fb02",
-    "name": "Brass Monkey",
-    "lat": 41.793058599662594,
-    "lng": -71.39716760751293
-  },
-  {
-    "id": "4b5287f3f964a520428127e3",
-    "name": "Gregg's Restaurant",
-    "lat": 41.74359857160401,
-    "lng": -71.43009147948699,
-    "opens": 690,
-    "closes": 60,
-    "price": 3
-  },
-  {
-    "id": "4e86933eb634e9fd2452c57b",
-    "name": "The Congress Tavern",
-    "lat": 41.823122236421426,
-    "lng": -71.41024426769717
-  },
-  {
-    "id": "5068b4ede4b0600e182303e2",
-    "name": "Circe Restaurant & Bar",
-    "lat": 41.82399051527038,
-    "lng": -71.40960444050388,
-    "opens": 600,
-    "closes": 900,
-    "price": 4
-  },
-  {
-    "id": "4e78d70d22714e6e5f2fa733",
-    "name": "The Dorrance",
-    "lat": 41.82356425795595,
-    "lng": -71.41150855135048,
-    "opens": 1020,
-    "closes": 120,
-    "price": 4
-  },
-  {
-    "id": "587965425a5869013d90301d",
-    "name": "Fortnight",
-    "lat": 41.82310168447487,
-    "lng": -71.41103576991672,
-    "opens": 990,
-    "closes": 60,
-    "price": 2
-  },
-  {
-    "id": "4b0586adf964a520f06922e3",
-    "name": "Fleming's Prime Steakhouse & Wine Bar",
-    "lat": 41.82511634257335,
-    "lng": -71.41552661923308,
-    "opens": 960,
-    "closes": 1260,
-    "price": 3
-  },
-  {
-    "id": "525a04c1498e5585d7bf080c",
-    "name": "New Harvest Coffee & Spirits",
-    "lat": 41.824084108801976,
-    "lng": -71.41050549239012
-  },
-  {
-    "id": "5317b109498e310d28aa0455",
-    "name": "G pub",
-    "lat": 41.82315798544739,
-    "lng": -71.4104358508191
-  },
-  {
-    "id": "4b74cc88f964a520a6f22de3",
-    "name": "Alley Cat",
-    "lat": 41.82230002057265,
-    "lng": -71.41539564008349
-  },
-  {
-    "id": "5a5ad6b012f0a96c74b03ae8",
-    "name": "Laura's Bar and Grill",
-    "lat": 41.914095,
-    "lng": -71.516845
-  },
-  {
-    "id": "4f1b7df5e4b095bc45d4e862",
-    "name": "Providence Marriott Lobby Bar",
-    "lat": 41.835422447867074,
-    "lng": -71.41282608683956
-  },
-  {
-    "id": "4a359a6df964a5203c9d1fe3",
-    "name": "Wild Colonial Tavern",
-    "lat": 41.822457269583275,
-    "lng": -71.4054203355339,
-    "opens": 1020,
-    "closes": 60,
-    "price": 2
-  },
-  {
-    "id": "504a65138302d0d1f73497a3",
-    "name": "What Cheer Tavern",
-    "lat": 41.79089085914292,
-    "lng": -71.39645145329017,
-    "opens": 840,
-    "closes": 60,
-    "price": 1
-  },
-  {
     "id": "4a9efc68f964a5200f3c20e3",
     "name": "Novare Res Bier Cafe",
     "lat": 43.657397630106225,
@@ -1420,5 +738,215 @@
     "name": "Fat Toad's Pub",
     "lat": 44.26324960772989,
     "lng": -69.78210549798057
+  },
+  {
+    "id": "4d604c865c39b1f7c27e024a",
+    "name": "Ground Round Sports Grille",
+    "lat": 44.303207009034125,
+    "lng": -69.81026793719816,
+    "opens": 660,
+    "closes": 1200,
+    "price": 1
+  },
+  {
+    "id": "4bd24d83caff9521c6a1d2f0",
+    "name": "Le Club Calumet",
+    "lat": 44.340791138183015,
+    "lng": -69.77620725518713
+  },
+  {
+    "id": "555d3c0d498ebde074c10309",
+    "name": "The Quarry Tap Room",
+    "lat": 44.28637186488683,
+    "lng": -69.79008300813166
+  },
+  {
+    "id": "4cb50deeb315a093d6109276",
+    "name": "Easy Street Lounge",
+    "lat": 44.28678805458032,
+    "lng": -69.79006787525466,
+    "opens": 1080,
+    "closes": 60,
+    "price": 2
+  },
+  {
+    "id": "50e78388e4b037d24599732e",
+    "name": "vfw Augusta",
+    "lat": 44.32717514038086,
+    "lng": -69.8125228881836
+  },
+  {
+    "id": "5054fdf1e4b0244dde77c73a",
+    "name": "Lajoies Brewfest",
+    "lat": 44.412574,
+    "lng": -69.802397
+  },
+  {
+    "id": "538667c1498e15240eb6d618",
+    "name": "Heritage Haven @ U ROUGH IT",
+    "lat": 44.255977630615234,
+    "lng": -69.64556884765625
+  },
+  {
+    "id": "50d521c2e4b02f73917a6776",
+    "name": "Windy Acres",
+    "lat": 44.28676986694336,
+    "lng": -69.75958251953125
+  },
+  {
+    "id": "50adad58e4b0a712108116e8",
+    "name": "Shenanigans",
+    "lat": 44.313482345127596,
+    "lng": -69.77457846651735
+  },
+  {
+    "id": "52db161f498eca668f3ffcb7",
+    "name": "vintage wine bar",
+    "lat": 44.22979327871344,
+    "lng": -69.77353769659938
+  },
+  {
+    "id": "568d990d498e6b03cfdf9b4d",
+    "name": "brews and views",
+    "lat": 44.281643,
+    "lng": -69.791847
+  },
+  {
+    "id": "4f5c1188e4b02628c1ad9514",
+    "name": "The Higher Grounds",
+    "lat": 44.30900032537701,
+    "lng": -69.77602230518838
+  },
+  {
+    "id": "53b6e26a498e41ea4e29a12f",
+    "name": "UPTA Camp",
+    "lat": 44.32607,
+    "lng": -70.025698
+  },
+  {
+    "id": "4c12f4b3b7b9c92895d8a837",
+    "name": "Gin Mill",
+    "lat": 44.314234857847,
+    "lng": -69.77466705676281
+  },
+  {
+    "id": "5b466c29dab4b1002c1185e5",
+    "name": "Splitters Bar & Grill",
+    "lat": 44.32630415884273,
+    "lng": -69.75222301509348
+  },
+  {
+    "id": "4dbdcf485da3ff58ec6c8cdf",
+    "name": "The Wharf",
+    "lat": 44.28609223311054,
+    "lng": -69.79007706856163,
+    "opens": 300,
+    "closes": 60,
+    "price": 2
+  },
+  {
+    "id": "4c6ae80f599fbe9a4c77913f",
+    "name": "Camp keyes NCO club",
+    "lat": 44.317460716666666,
+    "lng": -69.79160396666667
+  },
+  {
+    "id": "4cc78e98a32bb1f7b642a9a8",
+    "name": "Bridge Street Tavern",
+    "lat": 44.317011955171125,
+    "lng": -69.77410211261463,
+    "opens": 1140,
+    "closes": 60,
+    "price": 2
+  },
+  {
+    "id": "584cb0a8109dfe7d5ce4b065",
+    "name": "Singi's Bar",
+    "lat": 44.317516,
+    "lng": -69.741221
+  },
+  {
+    "id": "4dd47679ae60a78cec581949",
+    "name": "Doobie's",
+    "lat": 44.313467507517,
+    "lng": -69.77475245977477
+  },
+  {
+    "id": "4da9fd7793a04642f0755ad6",
+    "name": "The Clubhouse Tavern",
+    "lat": 44.347734,
+    "lng": -69.897526
+  },
+  {
+    "id": "548d06d6498eb5ef057a8123",
+    "name": "The Maine House",
+    "lat": 44.28622477826776,
+    "lng": -69.79007379814087
+  },
+  {
+    "id": "4ee3ef8693adf8e1a72ecd26",
+    "name": "Post 2",
+    "lat": 44.29049537809234,
+    "lng": -69.80706228516817
+  },
+  {
+    "id": "4e6cdd2aae603c15efce0e42",
+    "name": "The Refrigerator",
+    "lat": 44.309329986572266,
+    "lng": -69.80658721923828
+  },
+  {
+    "id": "551f0ad2498e53cb586228ac",
+    "name": "Patels Bar",
+    "lat": 44.316255,
+    "lng": -69.776677
+  },
+  {
+    "id": "4b6b7d5ff964a520190c2ce3",
+    "name": "Club OTR",
+    "lat": 44.3025080708709,
+    "lng": -69.8073684414974
+  },
+  {
+    "id": "4f3293b319836c91c7e55a1e",
+    "name": "Pine State Tobacco and Candy Co",
+    "lat": 44.29749,
+    "lng": -69.783378
+  },
+  {
+    "id": "50106f0de4b0871c8a902d00",
+    "name": "the bench",
+    "lat": 44.14043730050791,
+    "lng": -69.74279426833694
+  },
+  {
+    "id": "4aa1ef63f964a520b54120e3",
+    "name": "Fox Hollow Farm",
+    "lat": 44.273967288251285,
+    "lng": -69.9418830871582
+  },
+  {
+    "id": "4f443d9a19836ed0019309c8",
+    "name": "RF Grille",
+    "lat": 44.313746,
+    "lng": -69.774842
+  },
+  {
+    "id": "4d61882e9f67f04dce7985fb",
+    "name": "Woody's Bar",
+    "lat": 44.236841797828674,
+    "lng": -69.88704800605774
+  },
+  {
+    "id": "4c71ebb59e706dcb95be4962",
+    "name": "The Kennebec Wharf",
+    "lat": 44.28627415589223,
+    "lng": -69.80667675803001
+  },
+  {
+    "id": "50106fd2e4b0454c63cca1cc",
+    "name": "the bench",
+    "lat": 44.22959566231982,
+    "lng": -69.7761579205893
   }
 ]

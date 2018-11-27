@@ -1,0 +1,16 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+black = "*"
+"flake8" = "*"
+pylint = "*"
+web-py = {editable = true, git = "https://github.com/webpy/webpy"}
+mysql-connector = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
