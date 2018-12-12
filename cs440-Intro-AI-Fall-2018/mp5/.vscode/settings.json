@@ -1,0 +1,15 @@
+{
+    "python.pythonPath": ".venv/bin/python",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=100"
+    ],
+    "python.linting.pylintArgs": [],
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Path": ".venv/bin/autopep8",
+    "python.formatting.autopep8Args": [],
+    "python.linting.flake8Path": ".venv/bin/flake8",
+    "python.linting.pylintPath": ".venv/bin/pylint"
+}
