@@ -177,8 +177,8 @@ def _background_logic():
                 PG_SCREEN.blit(PG_TARGET_OBSERVED_IMAGE, (rx + ox, ry + oy))
 
             # Draw estimated
-            #(ex, ey) = TARGET_ESTIMATED_LOCATION
-            #PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + ex, ry + ey))
+            # (ex, ey) = TARGET_ESTIMATED_LOCATION
+            # PG_SCREEN.blit(PG_TARGET_IMAGE, (rx + ex, ry + ey))
 
             pygame.display.update()
             PG_UI_UPDATED = False
@@ -208,11 +208,11 @@ if __name__ == "__main__":
     # This is for part b of the MP. Uncomment when you work on this part of the MP
     # Remove the block comment to work on part b of the the MP
 
-    # Setup the UI
+    # # Setup the UI
     # _setup_ui()
-    # Start main logic thread
-    #thread = threading.Thread(target=_background_logic)
+    # # Start main logic thread
+    # thread = threading.Thread(target=_background_logic)
     # thread.start()
 
-    # Enter UI loop
+    # # Enter UI loop
     # _ui_loop()
